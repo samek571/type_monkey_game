@@ -11,8 +11,8 @@ Playing the game is pretty simple, just run the `game.py` file and...
 
 (Motivation behind the game)
 Killing zombies by explicitely writting out their name, you keep your house safe and not getting eaten by these ugly brain eating monsters. Make sure none of them is by the white circle line, otherwise game is over and your brain gets eaten.
-By each killed zombie you are more skilled, therefore the experience (xp) gains and each of the zombies carry some number of money. Having too much xp results in new level which will be beneficial later.
-There are also abilities, which sole purpose is to help you at killing the words. It could be abused and game is able to be played for an undefined period of time, therefore lets call this version a **Testnet**.
+By each killed zombie you are more skilled, therefore the experience (xp) gains. Each of the zombies carry positive number of money. Having enough xp results in new level which will be beneficial later.
+There are abilities which might help killing the zombies. As if right now, abilites doesnt have a cooldown, therefore can be abused so the game is able to be played for an undefined period of time. Lets call this version a **Testnet Version**.
 - By pressing `1` closest 5 zombies get killed
 - By pressing `2` longest 5 zombies get killed
 - By pressing `3` Mega crossbow shoots and kills as many zombies as possible within 15degree view

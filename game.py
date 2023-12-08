@@ -6,8 +6,8 @@ import math
 
 import level_definition
 import point_generator
-from killer_functions import Kill
 import random_word
+from killer_functions import Kill
 
 pygame.init()
 pygame.display.set_caption("Type monkey")
@@ -99,14 +99,14 @@ class Main:
 
             font = pygame.font.Font(None, 36)
             level_text = font.render(f"Lvl: {lvl}", True, (255, 255, 255))
-            xp_text = font.render(f"Coins: {xp}", True, (255, 255, 255))
+            xp_text = font.render(f"Xp: {xp}", True, (255, 255, 255))
             coins_text = font.render(f"Coins: {coins}", True, (255, 255, 255))
 
             safe_buffer = 50
             level_text_size_x, _ = level_text.get_size()
             xp_text_size_x, _ = xp_text.get_size()
 
-            screen.blit(level_text, (10 + 0 * safe_buffer, 10))
+            screen.blit(level_text, (10 + 0 * safe_buffer, 10)
             screen.blit(xp_text, (10 + 1 * safe_buffer + level_text_size_x, 10))
             screen.blit(coins_text, (10 + 2 * safe_buffer + level_text_size_x + xp_text_size_x, 10))
 
