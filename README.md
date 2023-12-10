@@ -1,12 +1,15 @@
-# type_monkey
+# Type_monkey
 A game I created as my first semester project at university
 
-To be able to play the game, just download `nltk` and `pygame` libraries, every other should be contained within the python installation you did a long time ago. Configure the correct interpreter right after opening the whole folder as project and you are ready to go. (It has been made in Python 3.9)
+## Installation
+1. To be able to play the game, just download `nltk` and `pygame` libraries, every other should be contained within the python installation you did a long time ago.
+2. Afterwards, head to **Python Console** and download all the `nltk` data by entering `import nltk` and `nltk.download()`. It should be no surprise there is everything contained within, as you already downloaded `nltk_data` folder, however there might have been some updates...
+3. Configure the correct interpreter right after opening the whole folder as project and you are ready to go. (It has been made in Python 3.9)
 
+## Idea
 The main idea is to improve typing skills on a computer keyboard (I see many people looking for letters and being inefficient as hell) yet still having at least some fun by playing this game.
 
-The front-end (or the stuff you see) is not really great, I am aware of that, nevertheless what is built is made properly without any bugs. Future updates are planned primarly and exclusively for the back-end, making the game more enjoyable and rich not through visuals, but rather through imagination (Potential updates might include futures as login, settings, shop to utilize coins and many more abilities as well as game modes).
-
+## Start playing
 Playing the game is pretty simple, just run the `game.py` file and...
 
 (Motivation behind the game)
@@ -19,5 +22,7 @@ There are abilities which might help killing the zombies. As if right now, abili
 - By pressing `4` zombies stop spawning and moving, granting you 4 seconds to kill the rest of them
 
 
+## Disclaimer
+The front-end (or the stuff you see) is not really great, I am aware of that, nevertheless what is built is made properly without any bugs. Future updates are planned primarly and exclusively for the back-end, making the game more enjoyable and rich not through visuals, but rather through imagination (Potential updates might include futures as login, settings, shop to utilize coins and many more abilities as well as game modes).
 
 (The whole project has been coded in Pycharm Community Edition and I dont want to be familiar with any other IDEs that are not from Jet Brains, especially visual studio code.)
