@@ -3,7 +3,8 @@ A game I created as my first semester project at university
 
 ## Installation
 1. To be able to play the game, just download `nltk` and `pygame` libraries, every other should be contained within the python installation you did a long time ago.
-2. Afterwards, head to **Python Console** and download all the `nltk` data by entering `import nltk` and `nltk.download()`. It should be no surprise there is everything contained within, as you already downloaded `nltk_data` folder, however there might have been some updates...
+2. Afterwards, head to **Python Console** and download all the `nltk` data by entering `import nltk` and `nltk.download()`. Afterwards hit `import nltk` followed by a `nltk download('brown')` command.
+It should be no surprise there is everything contained within, as you already downloaded `nltk_data` folder, however there might have been some updates...
 3. Configure the correct interpreter right after opening the whole folder as project and you are ready to go. (It has been made in Python 3.9)
 
 ## Idea
