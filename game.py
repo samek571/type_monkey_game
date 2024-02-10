@@ -129,7 +129,8 @@ class Main:
 
         while True:
             for event in pygame.event.get():
-                # check if mouse has been pressed - for safe exit
+
+                # esc / check if mouse has been pressed - for safe exit
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_x, mouse_y = event.pos
                     if (button_x <= mouse_x <= button_x + button_width) and (
@@ -137,7 +138,10 @@ class Main:
                         return self.lvl, self.xp, self.coins
 
                 # if something has been pressed on the keyboard
-                if event.type == pygame.KEYDOWN:
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE: # different pullout methode - no need to use mouse to stop playing
+                        return self.lvl, self.xp, self.coins
+
                     new_xp, new_coins = random.randint(3,8), random.randint(3,8)
                     # typed letters/ word is a mistake
                     if event.key == pygame.K_BACKSPACE:
@@ -148,9 +152,8 @@ class Main:
                             self.typed_text = self.typed_text[:-1]
                         self.update_text_position(font, width)
 
-
                     # submission of a word, check if word is in the game
-                    elif event.key == pygame.K_SPACE or event.key == pygame.K_KP_ENTER:
+                    elif event.key == pygame.K_SPACE or event.key == pygame.K_KP_ENTER or event.key == pygame.K_RETURN:
                         if self.typed_text in self.words_on_the_screen:
                             del self.words_on_the_screen[self.typed_text]
                             self.xp += new_xp
@@ -185,7 +188,7 @@ class Main:
                             del self.words_on_the_screen[p[-1]]
 
                     # display the pressed letter
-                    else:
+                    elif (65 <= event.key <= 90) or (97 <= event.key <= 122):
                         # kick back exactly the size of the letter in case it isnt monospaced
                         char_width, _ = font.size(event.unicode)
                         self.typed_text += event.unicode
