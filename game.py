@@ -4,10 +4,20 @@ import random
 import pygame
 import math
 
+#my files that are used just os it doesnt look ugly
 import level_definition
 import point_generator
 import random_word
 from killer_functions import Kill
+
+#making sure it defo downloads the dependencies into the same directory as we play in
+import nltk
+import os
+current_directory = os.path.dirname(os.path.abspath(__file__))
+nltk_data_directory = os.path.join(current_directory, 'nltk_data')
+nltk.data.path.append(nltk_data_directory)
+nltk.download('brown', download_dir=nltk_data_directory)
+
 
 pygame.init()
 pygame.display.set_caption("Type monkey")
@@ -219,6 +229,7 @@ class Main:
 
 game = Main(0, 0, 500, ['lore', 'news'])
 res = game.playing()
+print('lvl xp coins')
 print(res)
 
 pygame.quit()
