@@ -1,4 +1,5 @@
 import sqlite3
+import bcrypt
 
 def create_connection(db_file):
     conn = None
@@ -19,8 +20,10 @@ def create_table(conn):
 
 
 def add_user(conn, name, password):
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
     c = conn.cursor()
-    c.execute("INSERT INTO users (name, password) VALUES (?, ?)", (name, password))
+    c.execute("INSERT INTO users (name, password) VALUES (?, ?)", (name, hashed_password))
     conn.commit()
 
 def check_user(conn, name):
