@@ -24,25 +24,41 @@ nltk.download('brown', download_dir=nltk_data_directory)
 # TODO add to documentation "pip install bcrypt"
 # TODO basically same shit for pygame lib, nonpythonist wont play jackshit
 
-pygame.init()
-pygame.display.set_caption("Type monkey")
+def login():
+    conn = userdb.create_connection(db_file='users.db')
+    userdb.create_table(conn)
 
-dimension = 1000
-width, height = math.floor(1.618 * dimension), dimension
-screen = pygame.display.set_mode((width, height))
-x_origin, y_origin = width // 2, height
-font = pygame.font.Font(None, 36)
-word_freqs = nltk.FreqDist(w.lower() for w in brown.words())
+    name = input("Enter your name to log in: ")
+    user_exists, user_info, tmp_lvl, tmp_xp, tmp_coins = userdb.check_user(conn, name)
 
+    if user_exists:
+        print(f"Welcome back, {name}!")
+    else:
+        print(f"User {name} not found.")
+        response = input("Would you like to register? (yes/no): ")
+        if response.lower() == 'yes':
+            email = input("Enter your password: ")
+            userdb.add_user(conn, name, email)
+            print("You are registered and logged in.")
+        else:
+            print("You need to register to play.")
+
+    return conn, name, tmp_lvl, tmp_xp, tmp_coins
 
 
 class Main:
-    def __init__(self):
-        self.coins = 0
-        self.lvl, self.xp = level_definition.determinator(0, 0)
-        self.banned_area_game_end = 404
+    def __init__(self, tmp_lvl, tmp_xp, tmp_coins):
+        self.coins = tmp_coins
+        self.lvl, self.xp = level_definition.determinator(tmp_lvl, tmp_xp)
+
+        self.height = 1000
+        self.width = math.floor(1.618 * 1000)
+        self.screen = pygame.display.set_mode((self.width, self.height))
+        self.x_origin, self.y_origin = self.width // 2, self.height
+        self.font = pygame.font.Font(None, 36)
 
         #words
+        self.banned_area_game_end = 404
         self.cold_factor = 0.5 #TODO make it progressively fast
         self.words_spawnrate = 1000 #time in ms
         self.word_theme = ['adventure', 'belles_lettres', 'editorial', 'fiction', 'government', 'hobbies', 'humor', 'learned', 'lore', 'mystery', 'news', 'religion', 'reviews', 'romance', 'science_fiction']
@@ -51,44 +67,22 @@ class Main:
 
         self.typed_text = ''
         self.words_on_screen = collections.defaultdict(tuple)
-        self.text_x, self.text_y = width // 2, 10
+        self.text_x, self.text_y = self.width // 2, 10
         self.words_on_screen[random_word.get_word(self.word_theme, self.min_word_len, self.max_word_len)] =\
-            (point_generator.random_point_generator(self.banned_area_game_end, width, height, x_origin, y_origin))
+            (point_generator.random_point_generator(self.banned_area_game_end, self.width, self.height, self.x_origin, self.y_origin))
 
-        self.renderer = Render(screen, width, font, x_origin, y_origin)
-
-    def login(self):
-        conn = userdb.create_connection(db_file='users.db')
-        userdb.create_table(conn)
-
-        name = input("Enter your name to log in: ")
-        user_exists, user_info, tmp_lvl, tmp_xp, tmp_coins = userdb.check_user(conn, name)
-
-        if user_exists:
-            print(f"Welcome back, {name}!")
-            self.lvl, self.xp, self.coins = tmp_lvl, tmp_xp, tmp_coins
-        else:
-            print(f"User {name} not found.")
-            response = input("Would you like to register? (yes/no): ")
-            if response.lower() == 'yes':
-                email = input("Enter your password: ")
-                userdb.add_user(conn, name, email)
-                print("You are registered and logged in.")
-            else:
-                print("You need to register to play.")
-
-        return conn, name
-
+        self.renderer = Render(self.screen, self.font, self.width, self.x_origin, self.y_origin)
+        self.word_freqs = nltk.FreqDist(w.lower() for w in brown.words())
 
 
 
     def update_text_position(self):
-        total_text_width, _ = font.size(self.typed_text)
-        self.text_x = (width - total_text_width) // 2
+        total_text_width, _ = self.font.size(self.typed_text)
+        self.text_x = (self.width - total_text_width) // 2
 
 
     def playing(self):
-        screen_width, screen_height = screen.get_size()
+        screen_width, screen_height = self.screen.get_size()
         button_width, button_height = screen_width * 0.1, screen_height * 0.1
         button_x, button_y = screen_width - button_width - 10, 10
 
@@ -128,7 +122,7 @@ class Main:
 
                     # Abilities
                     elif event.key in {pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5}: #TODO abillity to bind this shit
-                        kill = Kill(x_origin, y_origin, self.words_on_screen)
+                        kill = Kill(self.x_origin, self.y_origin, self.words_on_screen)
                         killed_points = []
                         pushed_points = []
 
@@ -160,27 +154,27 @@ class Main:
                         for point in pushed_points:
                             x,y, word = point[1], point[2], point[-1]
 
-                            dx = x - x_origin
-                            dy = y - y_origin
+                            dx = x - self.x_origin
+                            dy = y - self.y_origin
                             distance = math.sqrt(dx ** 2 + dy ** 2)
                             kickback_factor = random.uniform(0.05, 0.15)
                             new_distance = distance * (1 + kickback_factor)
-                            new_x = x_origin + (dx / distance) * new_distance
-                            new_y = y_origin + (dy / distance) * new_distance
+                            new_x = self.x_origin + (dx / distance) * new_distance
+                            new_y = self.y_origin + (dy / distance) * new_distance
                             self.words_on_screen[word] = (new_x, new_y)
 
 
                     # display the pressed letter
                     elif ((65 <= event.key <= 90) or (97 <= event.key <= 122)) and not (pygame.key.get_mods() & pygame.KMOD_CTRL):
                         # kick back exactly the size of the letter in case it isnt monospaced
-                        char_width, _ = font.size(event.unicode)
+                        char_width, _ = self.font.size(event.unicode)
                         self.typed_text += event.unicode
 
                         if self.typed_text in self.words_on_screen:
                             deleted_word = self.typed_text
                             del self.words_on_screen[self.typed_text]
 
-                            rank = word_freqs[deleted_word]
+                            rank = self.word_freqs[deleted_word]
                             a,b = 1,10
                             word_value = (a+((b-a)*(rank-1)/2500))
 
@@ -198,27 +192,31 @@ class Main:
             if (curr_time - last_update_time_render) > 10: #this wont change because because its smoothness
                 last_update_time_render = curr_time
 
-                _q, new_words_on_screen = point_generator.update_all_points(self.banned_area_game_end, x_origin, y_origin, self.words_on_screen, self.cold_factor)
+                _q, new_words_on_screen = point_generator.update_all_points(self.banned_area_game_end, self.x_origin, self.y_origin, self.words_on_screen, self.cold_factor)
                 if _q: return self.lvl, self.xp, self.coins
                 self.words_on_screen = new_words_on_screen
 
 
                 if (curr_time - last_update_time_new_word) > self.words_spawnrate:
                     last_update_time_new_word = curr_time
-                    self.words_on_screen[random_word.get_word(self.word_theme, self.min_word_len, self.max_word_len)] = point_generator.random_point_generator(self.banned_area_game_end, width, height, x_origin, y_origin)
+                    self.words_on_screen[random_word.get_word(self.word_theme, self.min_word_len, self.max_word_len)] = point_generator.random_point_generator(self.banned_area_game_end, self.width, self.height, self.x_origin, self.y_origin)
 
             self.renderer.render_all(self.banned_area_game_end, self.typed_text, self.text_x, self.text_y, self.words_on_screen, self.lvl, self.xp, self.coins)
 
 def main():
-    game = Main()
-    conn, name = game.login()
+    #login
+    conn, name, tmp_lvl, tmp_xp, tmp_coins= login()
+
+    #playing
+    pygame.init()
+    pygame.display.set_caption("Type monkey")
+    game = Main(tmp_lvl, tmp_xp, tmp_coins)
     q,w,e = game.playing()
 
+    #exit
     userdb.update_progress(conn, name, q,w,e)
-
     print('lvl xp coins')
     print(q,w,e)
-
     pygame.quit()
 
 if __name__ == '__main__':

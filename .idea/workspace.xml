@@ -4,11 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="047624fc-f32e-49a6-a716-25ceac7952b8" name="Changes" comment="enhanced categories">
-      <change afterPath="$PROJECT_DIR$/userdb.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/users.db" afterDir="false" />
+    <list default="true" id="047624fc-f32e-49a6-a716-25ceac7952b8" name="Changes" comment="first functional data saving (its fucking ugly)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game.py" beforeDir="false" afterPath="$PROJECT_DIR$/game.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rendering_the_game.py" beforeDir="false" afterPath="$PROJECT_DIR$/rendering_the_game.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users.db" beforeDir="false" afterPath="$PROJECT_DIR$/users.db" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -196,7 +196,15 @@
       <option name="project" value="LOCAL" />
       <updated>1712087017842</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="first functional data saving (its fucking ugly)">
+      <option name="closed" value="true" />
+      <created>1712092790384</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1712092790384</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -225,6 +233,7 @@
     <MESSAGE value="Rendering class is now located elsewhere" />
     <MESSAGE value="&quot;ctrl + a&quot; is essentially the same as &quot;ctrl+backspace&quot;" />
     <MESSAGE value="enhanced categories" />
-    <option name="LAST_COMMIT_MESSAGE" value="enhanced categories" />
+    <MESSAGE value="first functional data saving (its fucking ugly)" />
+    <option name="LAST_COMMIT_MESSAGE" value="first functional data saving (its fucking ugly)" />
   </component>
 </project>

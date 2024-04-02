@@ -2,10 +2,10 @@ import pygame
 import level_definition
 
 class Render:
-    def __init__(self, screen, width, font, x_origin, y_origin):
+    def __init__(self, screen, font, width, x_origin, y_origin):
         self.screen = screen
-        self.width = width
         self.font = font
+        self.width = width
         self.x_origin = x_origin
         self.y_origin = y_origin
 
