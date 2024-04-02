@@ -83,20 +83,20 @@ class Main:
                     if event.key == pygame.K_ESCAPE: # different pullout methode - no need to use mouse to stop playing
                         return self.lvl, self.xp, self.coins
 
+                    elif (pygame.key.get_mods() & pygame.KMOD_CTRL) and (
+                            event.key == pygame.K_BACKSPACE or event.key == pygame.K_a):
+                        self.typed_text = ''
+                        self.update_text_position()
 
-                    # typed letters/ word is a mistake
-                    if event.key == pygame.K_BACKSPACE:
-                        # ctrl god mode - I am always pissed if that doesnt work and this is will NOT be the case
-                        if pygame.key.get_mods() & pygame.KMOD_CTRL:
-                            self.typed_text = ''
-                        else:
-                            self.typed_text = self.typed_text[:-1]
+                    elif event.key == pygame.K_BACKSPACE:
+                        self.typed_text = self.typed_text[:-1]
                         self.update_text_position()
 
                     # submission of a word, check if word is in the game
-                    elif event.key == pygame.K_SPACE or event.key == pygame.K_KP_ENTER or event.key == pygame.K_RETURN:
+                    if event.key == pygame.K_SPACE or event.key == pygame.K_KP_ENTER or event.key == pygame.K_RETURN:
                         self.typed_text = ''
                         self.update_text_position()
+
 
                     # Abilities
                     elif event.key in {pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5}: #TODO abillity to bind this shit
@@ -143,12 +143,11 @@ class Main:
 
 
                     # display the pressed letter
-                    elif (65 <= event.key <= 90) or (97 <= event.key <= 122):
+                    elif ((65 <= event.key <= 90) or (97 <= event.key <= 122)) and not (pygame.key.get_mods() & pygame.KMOD_CTRL):
                         # kick back exactly the size of the letter in case it isnt monospaced
                         char_width, _ = font.size(event.unicode)
                         self.typed_text += event.unicode
 
-                        # instead of space confirmation
                         if self.typed_text in self.words_on_screen:
                             deleted_word = self.typed_text
                             del self.words_on_screen[self.typed_text]
