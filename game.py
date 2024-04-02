@@ -6,6 +6,7 @@ import math
 import level_definition
 import point_generator
 import random_word
+from rendering_the_game import Render
 from killer_functions import Kill
 
 
@@ -47,94 +48,16 @@ class Main:
         self.typed_text = ''
         self.words_on_screen = collections.defaultdict(tuple)
         self.text_x, self.text_y = width // 2, 10
-        self.words_on_screen[random_word.get_word(self.word_theme, 3, 8)] = (point_generator.random_point_generator(self.banned_area_game_end, width, height, x_origin, y_origin))
+        self.words_on_screen[random_word.get_word(self.word_theme, self.min_word_len, self.max_word_len)] =\
+            (point_generator.random_point_generator(self.banned_area_game_end, width, height, x_origin, y_origin))
 
-        self.renderer = self.Render()
+        self.renderer = Render(screen, width, font, x_origin, y_origin)
 
 
     def update_text_position(self):
         total_text_width, _ = font.size(self.typed_text)
         self.text_x = (width - total_text_width) // 2
 
-    class Render:
-        def render_origin_and_bg(self, banned_area_game_end):
-            screen.fill('gray')
-            pygame.draw.circle(screen, 'white', (x_origin, y_origin), banned_area_game_end)
-            pygame.draw.circle(screen, 'gray', (x_origin, y_origin), banned_area_game_end - 5)
-            pygame.draw.circle(screen, 'white', (x_origin, y_origin), 10)
-
-        def render_all_points(self, words_on_screen):
-            for txt, val in words_on_screen.items():
-                i, j = val
-                pygame.draw.circle(screen, 'red', (i, j), 5)
-                text_surface = font.render(txt, True, (255, 255, 255))
-                screen.blit(text_surface, (i, j))
-
-        def render_exit_button(self):
-            button_width, button_height = 100, 50
-            button_x, button_y = width - button_width, 0
-
-            pygame.draw.rect(screen, (255, 0, 0), (button_x, button_y, button_width, button_height))
-            text_surface = font.render('Leave', True, 'white')
-            screen.blit(text_surface, (button_x + 15, button_y + 15))
-
-        def render_colorful_typed_text(self, words_on_screen, typed_text, text_x, text_y):
-            color = (255, 0, 0)
-            prefixes = []
-            for word, val in words_on_screen.items():
-                i, j = val
-                if word.startswith(typed_text):
-                    prefixes.append([word, i, j, len(typed_text)])
-
-            if prefixes:
-                color = (0, 255, 0)
-
-            typed_text_surface = font.render(typed_text, True, color)
-            screen.blit(typed_text_surface, (text_x, text_y + 5))
-
-            for word, i, j, l in prefixes:
-                word_surface = font.render(word[:l], True, color)
-                screen.blit(word_surface, (i, j))
-            pygame.display.flip()
-
-        def render_xp_bar_and_coins(self, lvl, xp, coins):
-            xp_bar_start = (2, 50)
-            xp_bar_end = (width - 2, 50)
-            xp_bar_height = 7
-
-            # outline
-            pygame.draw.rect(screen, 'black', (0, 50, width, 2))
-            pygame.draw.rect(screen, 'black', (0, 50 + xp_bar_height, width, 2))
-            pygame.draw.rect(screen, 'black', (0, xp_bar_start[-1], xp_bar_start[0], xp_bar_height))
-            pygame.draw.rect(screen, 'black', (xp_bar_end[0], xp_bar_end[-1], width, xp_bar_height))
-
-            # determine xp proportional to level up
-            percentage_full_xp_bar = level_definition.get_xp(lvl)
-            current_percentage = xp / percentage_full_xp_bar
-            xp_bar_filled = (xp_bar_end[0] - xp_bar_start[0]) * current_percentage
-            # do the thing
-            pygame.draw.rect(screen, 'blue', (xp_bar_start[0], xp_bar_start[1], xp_bar_filled, xp_bar_height))
-
-            level_text = font.render(f"Lvl: {lvl}", True, (255, 255, 255))
-            xp_text = font.render(f"Xp: {xp}", True, (255, 255, 255))
-            coins_text = font.render(f"Coins: {coins}", True, (255, 255, 255))
-
-            safe_buffer = 50
-            level_text_size_x, _ = level_text.get_size()
-            xp_text_size_x, _ = xp_text.get_size()
-
-            screen.blit(level_text, (10 + 0 * safe_buffer, 10))
-            screen.blit(xp_text, (10 + 1 * safe_buffer + level_text_size_x, 10))
-            screen.blit(coins_text, (10 + 2 * safe_buffer + level_text_size_x + xp_text_size_x, 10))
-
-
-        def render_all(self, banned_area_game_end, typed_text, text_x, text_y, words_on_screen, lvl, xp, coins):
-            self.render_origin_and_bg(banned_area_game_end)
-            self.render_exit_button()
-            self.render_xp_bar_and_coins(lvl, xp, coins)
-            self.render_all_points(words_on_screen)
-            self.render_colorful_typed_text(words_on_screen, typed_text, text_x, text_y)
-            pygame.display.flip()
 
     def playing(self):
         screen_width, screen_height = screen.get_size()
@@ -154,12 +77,13 @@ class Main:
                             button_y <= mouse_y <= button_y + button_height):
                         return self.lvl, self.xp, self.coins
 
+
                 # if something has been pressed on the keyboard
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE: # different pullout methode - no need to use mouse to stop playing
                         return self.lvl, self.xp, self.coins
 
-                    new_xp, new_coins = random.randint(3,8), random.randint(3,8)
+
                     # typed letters/ word is a mistake
                     if event.key == pygame.K_BACKSPACE:
                         # ctrl god mode - I am always pissed if that doesnt work and this is will NOT be the case
@@ -171,13 +95,6 @@ class Main:
 
                     # submission of a word, check if word is in the game
                     elif event.key == pygame.K_SPACE or event.key == pygame.K_KP_ENTER or event.key == pygame.K_RETURN:
-                        if self.typed_text in self.words_on_screen:
-                            del self.words_on_screen[self.typed_text]
-
-                            self.xp += new_xp
-                            self.coins += new_coins
-                            self.lvl, self.xp = level_definition.xp_map(self.lvl, self.xp)
-
                         self.typed_text = ''
                         self.update_text_position()
 
