@@ -11,6 +11,7 @@ from killer_functions import Kill
 
 #making sure it defo downloads the dependencies into the same directory as we play in
 import nltk
+from nltk.corpus import brown
 import os
 import pygame
 current_directory = os.path.dirname(os.path.abspath(__file__))
@@ -28,7 +29,7 @@ width, height = math.floor(1.618 * dimension), dimension
 screen = pygame.display.set_mode((width, height))
 x_origin, y_origin = width // 2, height
 font = pygame.font.Font(None, 36)
-
+word_freqs = nltk.FreqDist(w.lower() for w in brown.words())
 
 class Main:
     def __init__(self):
@@ -172,6 +173,7 @@ class Main:
                     elif event.key == pygame.K_SPACE or event.key == pygame.K_KP_ENTER or event.key == pygame.K_RETURN:
                         if self.typed_text in self.words_on_screen:
                             del self.words_on_screen[self.typed_text]
+
                             self.xp += new_xp
                             self.coins += new_coins
                             self.lvl, self.xp = level_definition.xp_map(self.lvl, self.xp)
@@ -210,7 +212,6 @@ class Main:
                         for p in killed_points:
                             del self.words_on_screen[p[-1]]
 
-                        kickback_constant = random.uniform(40, 50)
                         for point in pushed_points:
                             x,y, word = point[1], point[2], point[-1]
 
@@ -232,18 +233,25 @@ class Main:
 
                         # instead of space confirmation
                         if self.typed_text in self.words_on_screen:
+                            deleted_word = self.typed_text
                             del self.words_on_screen[self.typed_text]
-                            self.typed_text = ''
-                            self.xp += new_xp
-                            self.coins += new_coins
+
+                            rank = word_freqs[deleted_word]
+                            a,b = 1,10
+                            word_value = (a+((b-a)*(rank-1)/2500))
+
+                            self.xp += word_value
+                            self.coins += word_value
                             self.lvl, self.xp = level_definition.determinator(self.lvl, self.xp)
+                            self.xp, self.lvl, self.coins = round(self.xp,2), round(self.lvl,2), round(self.coins,2)
+                            self.typed_text = ''
 
                         self.update_text_position()
 
 
             # moving points
             curr_time = pygame.time.get_ticks()
-            if (curr_time - last_update_time_render) > 10:
+            if (curr_time - last_update_time_render) > 10: #this wont change because because its smoothness
                 last_update_time_render = curr_time
 
                 _q, new_words_on_screen = point_generator.update_all_points(self.banned_area_game_end, x_origin, y_origin, self.words_on_screen, self.cold_factor)
@@ -252,8 +260,8 @@ class Main:
 
 
                 if (curr_time - last_update_time_new_word) > self.words_spawnrate:
-                    self.words_on_screen[random_word.get_word(self.word_theme, self.min_word_len, self.max_word_len)] = point_generator.random_point_generator(self.banned_area_game_end, width, height, x_origin, y_origin)
                     last_update_time_new_word = curr_time
+                    self.words_on_screen[random_word.get_word(self.word_theme, self.min_word_len, self.max_word_len)] = point_generator.random_point_generator(self.banned_area_game_end, width, height, x_origin, y_origin)
 
             self.renderer.render_all(self.banned_area_game_end, self.typed_text, self.text_x, self.text_y, self.words_on_screen, self.lvl, self.xp, self.coins)
 

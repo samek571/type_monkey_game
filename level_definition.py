@@ -32,7 +32,7 @@ def get_xp(lvl):
 def determinator(lvl, xp):
     global xp_map
     while xp_map[lvl] < xp:
-        lvl, xp = lvl+1, abs(xp_map[lvl]-xp)
+        lvl, xp = lvl+1, float(str(round(xp-xp_map[lvl], 2)))
 
     return lvl, xp
 

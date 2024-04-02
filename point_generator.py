@@ -18,7 +18,6 @@ def move_points(target_x, target_y, current_x, current_y, step_size):
 
 
 def random_point_generator(radius, width, height, x_origin, y_origin):
-    i=0
     while True:
         angle = random.uniform(-math.pi/4, -3/4*math.pi)
         r = random.uniform(2*radius, 3*radius)
@@ -26,9 +25,7 @@ def random_point_generator(radius, width, height, x_origin, y_origin):
         x = r * math.cos(angle) + x_origin
         y = r * math.sin(angle) + y_origin
 
-        i += 1
         if 0 <= x <= width and 0 <= y <= height:
-            print(i)
             return (x, y)
 
 
