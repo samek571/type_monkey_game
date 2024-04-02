@@ -1,7 +1,6 @@
 import random
 import math
 import collections
-import random_word
 
 def move_points(target_x, target_y, current_x, current_y, step_size):
     vector_x = target_x - current_x
@@ -18,19 +17,19 @@ def move_points(target_x, target_y, current_x, current_y, step_size):
     return new_x, new_y
 
 
-def random_point_generator(words:dict, radius, width, x_origin, y_origin):
-
+def random_point_generator(radius, width, height, x_origin, y_origin):
+    i=0
     while True:
-        #TODO could be improved to not be just rectangle but rather circle of some kind
-        x = random.randint(10, width-10)
-        y = random.randint(60, 85)
+        angle = random.uniform(-math.pi/4, -3/4*math.pi)
+        r = random.uniform(2*radius, 3*radius)
 
+        x = r * math.cos(angle) + x_origin
+        y = r * math.sin(angle) + y_origin
 
-        #safe distance from origin
-        # distance_from_origin = math.sqrt((x - x_origin) ** 2 + (y - y_origin) ** 2)
-        # if 20/10*distance_from_origin < radius:
-        return (x,y)
-
+        i += 1
+        if 0 <= x <= width and 0 <= y <= height:
+            print(i)
+            return (x, y)
 
 
 def update_all_points(safe_distance, x_origin, y_origin, words_on_the_screen, cold_factor):

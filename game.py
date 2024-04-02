@@ -46,30 +46,30 @@ class Main:
         self.typed_text = ''
         self.words_on_screen = collections.defaultdict(tuple)
         self.text_x, self.text_y = width // 2, 10
-        self.words_on_screen[random_word.get_word(self.word_theme, 3, 8)] = (point_generator.random_point_generator(self.words_on_screen, self.banned_area_game_end, width, x_origin, y_origin))
+        self.words_on_screen[random_word.get_word(self.word_theme, 3, 8)] = (point_generator.random_point_generator(self.banned_area_game_end, width, height, x_origin, y_origin))
 
         self.renderer = self.Render()
 
 
-    def update_text_position(self, font, width):
+    def update_text_position(self):
         total_text_width, _ = font.size(self.typed_text)
         self.text_x = (width - total_text_width) // 2
 
     class Render:
-        def render_origin_and_bg(self, screen, banned_area_game_end, x_origin, y_origin):
+        def render_origin_and_bg(self, banned_area_game_end):
             screen.fill('gray')
             pygame.draw.circle(screen, 'white', (x_origin, y_origin), banned_area_game_end)
             pygame.draw.circle(screen, 'gray', (x_origin, y_origin), banned_area_game_end - 5)
             pygame.draw.circle(screen, 'white', (x_origin, y_origin), 10)
 
-        def render_all_points(self, screen, font, words_on_screen):
+        def render_all_points(self, words_on_screen):
             for txt, val in words_on_screen.items():
                 i, j = val
                 pygame.draw.circle(screen, 'red', (i, j), 5)
                 text_surface = font.render(txt, True, (255, 255, 255))
                 screen.blit(text_surface, (i, j))
 
-        def render_exit_button(self, screen, font):
+        def render_exit_button(self):
             button_width, button_height = 100, 50
             button_x, button_y = width - button_width, 0
 
@@ -77,7 +77,7 @@ class Main:
             text_surface = font.render('Leave', True, 'white')
             screen.blit(text_surface, (button_x + 15, button_y + 15))
 
-        def render_colorful_typed_text(self, screen, words_on_screen, typed_text, text_x, text_y):
+        def render_colorful_typed_text(self, words_on_screen, typed_text, text_x, text_y):
             color = (255, 0, 0)
             prefixes = []
             for word, val in words_on_screen.items():
@@ -96,7 +96,7 @@ class Main:
                 screen.blit(word_surface, (i, j))
             pygame.display.flip()
 
-        def render_xp_bar_and_coins(self, screen, lvl, xp, coins):
+        def render_xp_bar_and_coins(self, lvl, xp, coins):
             xp_bar_start = (2, 50)
             xp_bar_end = (width - 2, 50)
             xp_bar_height = 7
@@ -114,7 +114,6 @@ class Main:
             # do the thing
             pygame.draw.rect(screen, 'blue', (xp_bar_start[0], xp_bar_start[1], xp_bar_filled, xp_bar_height))
 
-            font = pygame.font.Font(None, 36)
             level_text = font.render(f"Lvl: {lvl}", True, (255, 255, 255))
             xp_text = font.render(f"Xp: {xp}", True, (255, 255, 255))
             coins_text = font.render(f"Coins: {coins}", True, (255, 255, 255))
@@ -128,13 +127,12 @@ class Main:
             screen.blit(coins_text, (10 + 2 * safe_buffer + level_text_size_x + xp_text_size_x, 10))
 
 
-        def render_all(self, screen, banned_area_game_end, x_origin, y_origin, font, typed_text, text_x, text_y,
-                       words_on_screen, lvl, xp, coins):
-            self.render_origin_and_bg(screen, banned_area_game_end, x_origin, y_origin)
-            self.render_exit_button(screen, font)
-            self.render_xp_bar_and_coins(screen, lvl, xp, coins)
-            self.render_all_points(screen, font, words_on_screen)
-            self.render_colorful_typed_text(screen, words_on_screen, typed_text, text_x, text_y)
+        def render_all(self, banned_area_game_end, typed_text, text_x, text_y, words_on_screen, lvl, xp, coins):
+            self.render_origin_and_bg(banned_area_game_end)
+            self.render_exit_button()
+            self.render_xp_bar_and_coins(lvl, xp, coins)
+            self.render_all_points(words_on_screen)
+            self.render_colorful_typed_text(words_on_screen, typed_text, text_x, text_y)
             pygame.display.flip()
 
     def playing(self):
@@ -168,7 +166,7 @@ class Main:
                             self.typed_text = ''
                         else:
                             self.typed_text = self.typed_text[:-1]
-                        self.update_text_position(font, width)
+                        self.update_text_position()
 
                     # submission of a word, check if word is in the game
                     elif event.key == pygame.K_SPACE or event.key == pygame.K_KP_ENTER or event.key == pygame.K_RETURN:
@@ -179,7 +177,7 @@ class Main:
                             self.lvl, self.xp = level_definition.xp_map(self.lvl, self.xp)
 
                         self.typed_text = ''
-                        self.update_text_position(font, width)
+                        self.update_text_position()
 
                     # Abilities
                     elif event.key in {pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5}: #TODO abillity to bind this shit
@@ -240,7 +238,7 @@ class Main:
                             self.coins += new_coins
                             self.lvl, self.xp = level_definition.determinator(self.lvl, self.xp)
 
-                        self.update_text_position(font, width)
+                        self.update_text_position()
 
 
             # moving points
@@ -254,10 +252,10 @@ class Main:
 
 
                 if (curr_time - last_update_time_new_word) > self.words_spawnrate:
-                    self.words_on_screen[random_word.get_word(self.word_theme, self.min_word_len, self.max_word_len)] = point_generator.random_point_generator(self.words_on_screen, self.banned_area_game_end, width, x_origin, y_origin)
+                    self.words_on_screen[random_word.get_word(self.word_theme, self.min_word_len, self.max_word_len)] = point_generator.random_point_generator(self.banned_area_game_end, width, height, x_origin, y_origin)
                     last_update_time_new_word = curr_time
 
-            self.renderer.render_all(screen, self.banned_area_game_end, x_origin, y_origin, font, self.typed_text, self.text_x, self.text_y, self.words_on_screen, self.lvl, self.xp, self.coins)
+            self.renderer.render_all(self.banned_area_game_end, self.typed_text, self.text_x, self.text_y, self.words_on_screen, self.lvl, self.xp, self.coins)
 
 
 
