@@ -41,7 +41,7 @@ class Main:
         #words
         self.cold_factor = 0.5 #TODO make it progressively fast
         self.words_spawnrate = 1000 #time in ms
-        self.word_theme = ['lore', 'news']
+        self.word_theme = ['adventure', 'belles_lettres', 'editorial', 'fiction', 'government', 'hobbies', 'humor', 'learned', 'lore', 'mystery', 'news', 'religion', 'reviews', 'romance', 'science_fiction']
         self.min_word_len = 3
         self.max_word_len = 8
 
