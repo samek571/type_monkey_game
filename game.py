@@ -15,12 +15,14 @@ import nltk
 from nltk.corpus import brown
 import os
 import pygame
+import userdb
+
 current_directory = os.path.dirname(os.path.abspath(__file__))
 nltk_data_directory = os.path.join(current_directory, 'nltk_data')
 nltk.data.path.append(nltk_data_directory)
 nltk.download('brown', download_dir=nltk_data_directory)
-#TODO basically same shit for pygame lib, nonpythonist wont play jackshit
-
+# TODO add to documentation "pip install bcrypt"
+# TODO basically same shit for pygame lib, nonpythonist wont play jackshit
 
 pygame.init()
 pygame.display.set_caption("Type monkey")
@@ -31,6 +33,8 @@ screen = pygame.display.set_mode((width, height))
 x_origin, y_origin = width // 2, height
 font = pygame.font.Font(None, 36)
 word_freqs = nltk.FreqDist(w.lower() for w in brown.words())
+
+
 
 class Main:
     def __init__(self):
@@ -52,6 +56,30 @@ class Main:
             (point_generator.random_point_generator(self.banned_area_game_end, width, height, x_origin, y_origin))
 
         self.renderer = Render(screen, width, font, x_origin, y_origin)
+
+    def login(self):
+        conn = userdb.create_connection(db_file='users.db')
+        userdb.create_table(conn)
+
+        name = input("Enter your name to log in: ")
+        user_exists, user_info, tmp_lvl, tmp_xp, tmp_coins = userdb.check_user(conn, name)
+
+        if user_exists:
+            print(f"Welcome back, {name}!")
+            self.lvl, self.xp, self.coins = tmp_lvl, tmp_xp, tmp_coins
+        else:
+            print(f"User {name} not found.")
+            response = input("Would you like to register? (yes/no): ")
+            if response.lower() == 'yes':
+                email = input("Enter your password: ")
+                userdb.add_user(conn, name, email)
+                print("You are registered and logged in.")
+            else:
+                print("You need to register to play.")
+
+        return conn, name
+
+
 
 
     def update_text_position(self):
@@ -181,11 +209,17 @@ class Main:
 
             self.renderer.render_all(self.banned_area_game_end, self.typed_text, self.text_x, self.text_y, self.words_on_screen, self.lvl, self.xp, self.coins)
 
+def main():
+    game = Main()
+    conn, name = game.login()
+    q,w,e = game.playing()
 
+    userdb.update_progress(conn, name, q,w,e)
 
-game = Main() #TODO in shop unlock more of these fuckers
-res = game.playing()
-print('lvl xp coins')
-print(res)
+    print('lvl xp coins')
+    print(q,w,e)
 
-pygame.quit()
+    pygame.quit()
+
+if __name__ == '__main__':
+    main()
