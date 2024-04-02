@@ -65,4 +65,3 @@ class Kill:
 
         return same_location_points + max_points_list
 
-

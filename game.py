@@ -1,7 +1,5 @@
 import collections
 import random
-
-import pygame
 import math
 
 #my files that are used just os it doesnt look ugly
@@ -14,10 +12,12 @@ from killer_functions import Kill
 #making sure it defo downloads the dependencies into the same directory as we play in
 import nltk
 import os
+import pygame
 current_directory = os.path.dirname(os.path.abspath(__file__))
 nltk_data_directory = os.path.join(current_directory, 'nltk_data')
 nltk.data.path.append(nltk_data_directory)
 nltk.download('brown', download_dir=nltk_data_directory)
+#TODO basically same shit for pygame lib, nonpythonist wont play jackshit
 
 
 pygame.init()
@@ -31,33 +31,39 @@ font = pygame.font.Font(None, 36)
 
 
 class Main:
-    def __init__(self, xp, coins, safe_distance, word_theme):
-        self.xp = xp
-        self.coins = coins
-        self.lvl, self.xp = level_definition.determinator(0, self.xp)
-        self.safe_distance = safe_distance
-        self.word_theme = word_theme
+    def __init__(self):
+        self.coins = 0
+        self.lvl, self.xp = level_definition.determinator(0, 0)
+        self.banned_area_game_end = 404
+
+        #words
+        self.cold_factor = 0.5 #TODO make it progressively fast
+        self.words_spawnrate = 1000 #time in ms
+        self.word_theme = ['lore', 'news']
+        self.min_word_len = 3
+        self.max_word_len = 8
 
         self.typed_text = ''
-        self.words_on_the_screen = collections.defaultdict(tuple)
+        self.words_on_screen = collections.defaultdict(tuple)
         self.text_x, self.text_y = width // 2, 10
-        self.words_on_the_screen[random_word.get_word(word_theme, 3, 8)] = (point_generator.random_point_generator(self.words_on_the_screen, safe_distance, width, x_origin, y_origin))
+        self.words_on_screen[random_word.get_word(self.word_theme, 3, 8)] = (point_generator.random_point_generator(self.words_on_screen, self.banned_area_game_end, width, x_origin, y_origin))
 
         self.renderer = self.Render()
+
 
     def update_text_position(self, font, width):
         total_text_width, _ = font.size(self.typed_text)
         self.text_x = (width - total_text_width) // 2
 
     class Render:
-        def render_origin_and_bg(self, screen, safe_distance, x_origin, y_origin):
+        def render_origin_and_bg(self, screen, banned_area_game_end, x_origin, y_origin):
             screen.fill('gray')
-            pygame.draw.circle(screen, 'white', (x_origin, y_origin), safe_distance)
-            pygame.draw.circle(screen, 'gray', (x_origin, y_origin), safe_distance - 5)
+            pygame.draw.circle(screen, 'white', (x_origin, y_origin), banned_area_game_end)
+            pygame.draw.circle(screen, 'gray', (x_origin, y_origin), banned_area_game_end - 5)
             pygame.draw.circle(screen, 'white', (x_origin, y_origin), 10)
 
-        def render_all_points(self, screen, font, words_on_the_screen):
-            for txt, val in words_on_the_screen.items():
+        def render_all_points(self, screen, font, words_on_screen):
+            for txt, val in words_on_screen.items():
                 i, j = val
                 pygame.draw.circle(screen, 'red', (i, j), 5)
                 text_surface = font.render(txt, True, (255, 255, 255))
@@ -71,10 +77,10 @@ class Main:
             text_surface = font.render('Leave', True, 'white')
             screen.blit(text_surface, (button_x + 15, button_y + 15))
 
-        def render_colorful_typed_text(self, screen, words_on_the_screen, typed_text, text_x, text_y):
+        def render_colorful_typed_text(self, screen, words_on_screen, typed_text, text_x, text_y):
             color = (255, 0, 0)
             prefixes = []
-            for word, val in words_on_the_screen.items():
+            for word, val in words_on_screen.items():
                 i, j = val
                 if word.startswith(typed_text):
                     prefixes.append([word, i, j, len(typed_text)])
@@ -122,21 +128,22 @@ class Main:
             screen.blit(coins_text, (10 + 2 * safe_buffer + level_text_size_x + xp_text_size_x, 10))
 
 
-        def render_all(self, screen, safe_distance, x_origin, y_origin, font, typed_text, text_x, text_y,
-                       words_on_the_screen, lvl, xp, coins):
-            self.render_origin_and_bg(screen, safe_distance, x_origin, y_origin)
+        def render_all(self, screen, banned_area_game_end, x_origin, y_origin, font, typed_text, text_x, text_y,
+                       words_on_screen, lvl, xp, coins):
+            self.render_origin_and_bg(screen, banned_area_game_end, x_origin, y_origin)
             self.render_exit_button(screen, font)
             self.render_xp_bar_and_coins(screen, lvl, xp, coins)
-            self.render_all_points(screen, font, words_on_the_screen)
-            self.render_colorful_typed_text(screen, words_on_the_screen, typed_text, text_x, text_y)
+            self.render_all_points(screen, font, words_on_screen)
+            self.render_colorful_typed_text(screen, words_on_screen, typed_text, text_x, text_y)
             pygame.display.flip()
 
     def playing(self):
-        last_update_time_new_word = pygame.time.get_ticks()
-
         screen_width, screen_height = screen.get_size()
         button_width, button_height = screen_width * 0.1, screen_height * 0.1
         button_x, button_y = screen_width - button_width - 10, 10
+
+        last_update_time_new_word = pygame.time.get_ticks()
+        last_update_time_render = pygame.time.get_ticks()
 
         while True:
             for event in pygame.event.get():
@@ -165,8 +172,8 @@ class Main:
 
                     # submission of a word, check if word is in the game
                     elif event.key == pygame.K_SPACE or event.key == pygame.K_KP_ENTER or event.key == pygame.K_RETURN:
-                        if self.typed_text in self.words_on_the_screen:
-                            del self.words_on_the_screen[self.typed_text]
+                        if self.typed_text in self.words_on_screen:
+                            del self.words_on_screen[self.typed_text]
                             self.xp += new_xp
                             self.coins += new_coins
                             self.lvl, self.xp = level_definition.xp_map(self.lvl, self.xp)
@@ -175,28 +182,49 @@ class Main:
                         self.update_text_position(font, width)
 
                     # Abilities
-                    elif event.key in {pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4}:
-                        kill = Kill(x_origin, y_origin, self.words_on_the_screen)
+                    elif event.key in {pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5}: #TODO abillity to bind this shit
+                        kill = Kill(x_origin, y_origin, self.words_on_screen)
                         killed_points = []
+                        pushed_points = []
 
-                        # p; p closest words
+                        # kill p closest words
                         if event.key == pygame.K_1:
-                            killed_points = kill.kill_p_closest(5)
+                            killed_points = kill.kill_p_closest(5) #TODO inheret value based on the shop
 
-                        # q; q longest words
+                        # kill q longest words
                         elif event.key == pygame.K_2:
-                            killed_points = kill.kill_q_longest(5)
+                            killed_points = kill.kill_q_longest(5) #TODO inheret value based on the shop
 
                         # angle; max words killed in angle #nlgn hard leetcode problem #1610
                         elif event.key == pygame.K_3:
-                            killed_points = kill.kill_in_angle(15)
+                            killed_points = kill.kill_in_angle(15) #TODO inheret value based on the shop
 
                         # freeeeeeeeeeeeze
                         elif event.key == pygame.K_4:
-                            last_update_time_new_word += 4000
+                            last_update_time_new_word += 4000 #TODO inheret value based on the shop
+                            last_update_time_render += 4000 #TODO inheret value based on the shop
+
+                        # push-back some closest elements
+                        elif event.key == pygame.K_5:
+                            pushed_points = kill.kill_p_closest(8)
+
 
                         for p in killed_points:
-                            del self.words_on_the_screen[p[-1]]
+                            del self.words_on_screen[p[-1]]
+
+                        kickback_constant = random.uniform(40, 50)
+                        for point in pushed_points:
+                            x,y, word = point[1], point[2], point[-1]
+
+                            dx = x - x_origin
+                            dy = y - y_origin
+                            distance = math.sqrt(dx ** 2 + dy ** 2)
+                            kickback_factor = random.uniform(0.05, 0.15)
+                            new_distance = distance * (1 + kickback_factor)
+                            new_x = x_origin + (dx / distance) * new_distance
+                            new_y = y_origin + (dy / distance) * new_distance
+                            self.words_on_screen[word] = (new_x, new_y)
+
 
                     # display the pressed letter
                     elif (65 <= event.key <= 90) or (97 <= event.key <= 122):
@@ -205,8 +233,8 @@ class Main:
                         self.typed_text += event.unicode
 
                         # instead of space confirmation
-                        if self.typed_text in self.words_on_the_screen:
-                            del self.words_on_the_screen[self.typed_text]
+                        if self.typed_text in self.words_on_screen:
+                            del self.words_on_screen[self.typed_text]
                             self.typed_text = ''
                             self.xp += new_xp
                             self.coins += new_coins
@@ -214,21 +242,26 @@ class Main:
 
                         self.update_text_position(font, width)
 
+
             # moving points
-            current_time = pygame.time.get_ticks()
-            if current_time - last_update_time_new_word >= 900:
-                _q, new_txt = point_generator.update_all_points(self.safe_distance, width, x_origin, y_origin, self.words_on_the_screen, self.word_theme)
-                if _q:
-                    return self.lvl, self.xp, self.coins
-                else:
-                    self.words_on_the_screen = new_txt
-                    last_update_time_new_word = current_time
+            curr_time = pygame.time.get_ticks()
+            if (curr_time - last_update_time_render) > 10:
+                last_update_time_render = curr_time
 
-            # render
-            self.renderer.render_all(screen, self.safe_distance, x_origin, y_origin, font, self.typed_text, self.text_x, self.text_y, self.words_on_the_screen, self.lvl, self.xp, self.coins)
+                _q, new_words_on_screen = point_generator.update_all_points(self.banned_area_game_end, x_origin, y_origin, self.words_on_screen, self.cold_factor)
+                if _q: return self.lvl, self.xp, self.coins
+                self.words_on_screen = new_words_on_screen
 
 
-game = Main(0, 0, 500, ['lore', 'news'])
+                if (curr_time - last_update_time_new_word) > self.words_spawnrate:
+                    self.words_on_screen[random_word.get_word(self.word_theme, self.min_word_len, self.max_word_len)] = point_generator.random_point_generator(self.words_on_screen, self.banned_area_game_end, width, x_origin, y_origin)
+                    last_update_time_new_word = curr_time
+
+            self.renderer.render_all(screen, self.banned_area_game_end, x_origin, y_origin, font, self.typed_text, self.text_x, self.text_y, self.words_on_screen, self.lvl, self.xp, self.coins)
+
+
+
+game = Main() #TODO in shop unlock more of these fuckers
 res = game.playing()
 print('lvl xp coins')
 print(res)
