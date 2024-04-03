@@ -40,9 +40,7 @@ def check_user(conn, name, password):
     user_info = c.fetchone()
 
     if user_info:
-        # The hashed password should already be a bytes object; no need to decode
         hashed_password = user_info[1]
-        # Ensure the provided password is also a bytes object
         if bcrypt.checkpw(password.encode('utf-8'), hashed_password):
             print("Login successful.")
             return True, user_info, user_info[2], user_info[3], user_info[4], user_info[5]
@@ -52,7 +50,6 @@ def check_user(conn, name, password):
     else:
         response = input("No user found with that name. Do you want to add a new user? (yes/no): ").strip()
         if response.lower() in {'yes', 'y', ''}:
-            # Password is hashed and should be stored as bytes; make sure add_user() handles bytes
             hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
             add_user(conn, name, hashed_password)
             print("New user added and logged in.")

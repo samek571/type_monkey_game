@@ -212,20 +212,26 @@ class Main:
             self.renderer.render_all(self.banned_area_game_end, self.typed_text, self.text_x, self.text_y, self.words_on_screen, self.lvl, self.xp, self.coins, time_age)
 
 def main():
-    #login
-    conn, name, tmp_lvl, tmp_xp, tmp_coins, tmp_time = login()
+    session_token = True
+    conn, name, lvl, xp, coins, time = login()
+    # TODO prompt shop
+    # TODO prompt gamemode
+    while session_token:
 
-    #playing
-    pygame.init()
-    pygame.display.set_caption("Type monkey")
-    game = Main(tmp_lvl, tmp_xp, tmp_coins)
-    lvl, xp, coins, time = game.playing()
+        # Playing
+        pygame.init()
+        pygame.display.set_caption("Type monkey")
+        game = Main(lvl, xp, coins)
+        lvl, xp, coins, time = game.playing()
 
-    #exit
-    userdb.update_progress(conn, name, lvl, xp, coins, time)
-    print('lvl xp coins time')
-    print(lvl, xp, coins, time)
-    pygame.quit()
+        userdb.update_progress(conn, name, lvl, xp, coins, time)
+        print('\nlvl xp coins time')
+        print(lvl, xp, coins, time)
+        pygame.quit()
 
-if __name__ == '__main__':
-    main()
+        choice = input("\nDo you want to play again or log out? (play/log out): ").lower()
+        if choice in {"log out", "out", "no", "logout"}:
+            session_token = False
+
+
+if __name__ == '__main__': main()
