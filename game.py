@@ -88,8 +88,12 @@ class Main:
 
         last_update_time_new_word = pygame.time.get_ticks()
         last_update_time_render = pygame.time.get_ticks()
+        time_to_boot = pygame.time.get_ticks()
 
         while True:
+            curr_time = pygame.time.get_ticks()
+            time_age = round((curr_time- time_to_boot)/1000, 2)
+
             for event in pygame.event.get():
 
                 # esc / check if mouse has been pressed - for safe exit
@@ -97,13 +101,13 @@ class Main:
                     mouse_x, mouse_y = event.pos
                     if (button_x <= mouse_x <= button_x + button_width) and (
                             button_y <= mouse_y <= button_y + button_height):
-                        return self.lvl, self.xp, self.coins
+                        return self.lvl, self.xp, self.coins, time_age
 
 
                 # if something has been pressed on the keyboard
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE: # different pullout methode - no need to use mouse to stop playing
-                        return self.lvl, self.xp, self.coins
+                        return self.lvl, self.xp, self.coins, time_age
 
                     elif (pygame.key.get_mods() & pygame.KMOD_CTRL) and (
                             event.key == pygame.K_BACKSPACE or event.key == pygame.K_a):
@@ -187,13 +191,12 @@ class Main:
                         self.update_text_position()
 
 
-            # moving points
-            curr_time = pygame.time.get_ticks()
-            if (curr_time - last_update_time_render) > 10: #this wont change because because its smoothness
+            # rendering and shit
+            if (curr_time - last_update_time_render) > 10: #this is constant
                 last_update_time_render = curr_time
 
                 _q, new_words_on_screen = point_generator.update_all_points(self.banned_area_game_end, self.x_origin, self.y_origin, self.words_on_screen, self.cold_factor)
-                if _q: return self.lvl, self.xp, self.coins
+                if _q: return self.lvl, self.xp, self.coins, time_age
                 self.words_on_screen = new_words_on_screen
 
 
@@ -201,7 +204,7 @@ class Main:
                     last_update_time_new_word = curr_time
                     self.words_on_screen[random_word.get_word(self.word_theme, self.min_word_len, self.max_word_len)] = point_generator.random_point_generator(self.banned_area_game_end, self.width, self.height, self.x_origin, self.y_origin)
 
-            self.renderer.render_all(self.banned_area_game_end, self.typed_text, self.text_x, self.text_y, self.words_on_screen, self.lvl, self.xp, self.coins)
+            self.renderer.render_all(self.banned_area_game_end, self.typed_text, self.text_x, self.text_y, self.words_on_screen, self.lvl, self.xp, self.coins, time_age)
 
 def main():
     #login
@@ -211,12 +214,12 @@ def main():
     pygame.init()
     pygame.display.set_caption("Type monkey")
     game = Main(tmp_lvl, tmp_xp, tmp_coins)
-    q,w,e = game.playing()
+    lvl, xp, coins, time = game.playing()
 
     #exit
-    userdb.update_progress(conn, name, q,w,e)
-    print('lvl xp coins')
-    print(q,w,e)
+    userdb.update_progress(conn, name, lvl, xp, coins)
+    print('lvl xp coins time')
+    print(lvl, xp, coins, time)
     pygame.quit()
 
 if __name__ == '__main__':

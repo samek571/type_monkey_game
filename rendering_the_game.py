@@ -49,17 +49,16 @@ class Render:
             self.screen.blit(word_surface, (i, j))
         pygame.display.flip()
 
-    def render_xp_bar_and_coins(self, lvl, xp, coins):
+    def render_xp_bar_and_coins(self, lvl, xp, coins, time):
         xp_bar_start = (2, 50)
         xp_bar_end = (self.width - 2, 50)
         xp_bar_height = 7
 
-        # outline
+        # xp bar outline
         pygame.draw.rect(self.screen, 'black', (0, 50, self.width, 2))
         pygame.draw.rect(self.screen, 'black', (0, 50 + xp_bar_height, self.width, 2))
         pygame.draw.rect(self.screen, 'black', (0, xp_bar_start[-1], xp_bar_start[0], xp_bar_height))
         pygame.draw.rect(self.screen, 'black', (xp_bar_end[0], xp_bar_end[-1], self.width, xp_bar_height))
-
         # determine xp proportional to level up
         percentage_full_xp_bar = level_definition.get_xp(lvl)
         current_percentage = xp / percentage_full_xp_bar
@@ -67,9 +66,11 @@ class Render:
         # do the thing
         pygame.draw.rect(self.screen, 'blue', (xp_bar_start[0], xp_bar_start[1], xp_bar_filled, xp_bar_height))
 
+
         level_text = self.font.render(f"Lvl: {lvl}", True, (255, 255, 255))
         xp_text = self.font.render(f"Xp: {xp}", True, (255, 255, 255))
         coins_text = self.font.render(f"Coins: {coins}", True, (255, 255, 255))
+        time_txt = self.font.render(f"Time: {time}", True, (255, 255, 255))
 
         safe_buffer = 50
         level_text_size_x, _ = level_text.get_size()
@@ -78,11 +79,12 @@ class Render:
         self.screen.blit(level_text, (10 + 0 * safe_buffer, 10))
         self.screen.blit(xp_text, (10 + 1 * safe_buffer + level_text_size_x, 10))
         self.screen.blit(coins_text, (10 + 2 * safe_buffer + level_text_size_x + xp_text_size_x, 10))
+        self.screen.blit(time_txt, (self.width-5*safe_buffer, 10))
 
-    def render_all(self, banned_area_game_end, typed_text, text_x, text_y, words_on_screen, lvl, xp, coins):
+    def render_all(self, banned_area_game_end, typed_text, text_x, text_y, words_on_screen, lvl, xp, coins, time):
         self.render_origin_and_bg(banned_area_game_end)
         self.render_exit_button()
-        self.render_xp_bar_and_coins(lvl, xp, coins)
+        self.render_xp_bar_and_coins(lvl, xp, coins, time)
         self.render_all_points(words_on_screen)
         self.render_colorful_typed_text(words_on_screen, typed_text, text_x, text_y)
         pygame.display.flip()
