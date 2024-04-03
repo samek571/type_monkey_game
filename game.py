@@ -29,21 +29,26 @@ def login():
     userdb.create_table(conn)
 
     name = input("Enter your name to log in: ")
-    user_exists, user_info, tmp_lvl, tmp_xp, tmp_coins = userdb.check_user(conn, name)
+    password = input("Enter your password: ")
+    user_exists, password_correct, tmp_lvl, tmp_xp, tmp_coins, tmp_time = userdb.check_user(conn, name, password)
 
-    if user_exists:
-        print(f"Welcome back, {name}!")
+
+    if user_exists and password_correct:
+        print(f"Welcome back, {name}! Login successful.")
+        return conn, name, tmp_lvl, tmp_xp, tmp_coins, tmp_time
+    elif user_exists and not password_correct:
+        print("Incorrect password.")
+        exit()  # Or handle this scenario differently
     else:
         print(f"User {name} not found.")
         response = input("Would you like to register? (yes/no): ")
         if response.lower() == 'yes':
-            email = input("Enter your password: ")
-            userdb.add_user(conn, name, email)
+            userdb.add_user(conn, name, password)  # Here, ensure password hashing
             print("You are registered and logged in.")
+            return conn, name, 0, 0, 0, None  # Assuming new user starts with no progress
         else:
             print("You need to register to play.")
-
-    return conn, name, tmp_lvl, tmp_xp, tmp_coins
+            exit()
 
 
 class Main:
@@ -208,7 +213,7 @@ class Main:
 
 def main():
     #login
-    conn, name, tmp_lvl, tmp_xp, tmp_coins= login()
+    conn, name, tmp_lvl, tmp_xp, tmp_coins, tmp_time = login()
 
     #playing
     pygame.init()
@@ -217,7 +222,7 @@ def main():
     lvl, xp, coins, time = game.playing()
 
     #exit
-    userdb.update_progress(conn, name, lvl, xp, coins)
+    userdb.update_progress(conn, name, lvl, xp, coins, time)
     print('lvl xp coins time')
     print(lvl, xp, coins, time)
     pygame.quit()
