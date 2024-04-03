@@ -39,6 +39,7 @@ Let's call this version a **First Working Version** as there is a functional log
 - settings
 - many more bind-able abilities 
 - Nicer gui
+- imporved performance
 - autopilot sub-game
 
 ## Disclaimer
