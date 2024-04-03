@@ -8,28 +8,24 @@ import point_generator
 import random_word
 from rendering_the_game import Render
 from killer_functions import Kill
+import userdb
 
 
 #making sure it defo downloads the dependencies into the same directory as we play in
+import pygame
 import nltk
 from nltk.corpus import brown
-import os
-import pygame
-import userdb
 
-current_directory = os.path.dirname(os.path.abspath(__file__))
-nltk_data_directory = os.path.join(current_directory, 'nltk_data')
-nltk.data.path.append(nltk_data_directory)
-nltk.download('brown', download_dir=nltk_data_directory)
-# TODO add to documentation "pip install bcrypt"
-# TODO basically same shit for pygame lib, nonpythonist wont play jackshit
 
-def login():
+'''interesting stuff'''
+def login(name=None, password=None):
     conn = userdb.create_connection(db_file='users.db')
     userdb.create_table(conn)
 
-    name = input("Enter your name to log in: ")
-    password = input("Enter your password: ")
+
+    if name is None and password is None:
+        name = input("Enter your username: ")
+        password = input("Enter your password: ")
     user_exists, password_correct, tmp_lvl, tmp_xp, tmp_coins, tmp_time = userdb.check_user(conn, name, password)
 
 
@@ -58,13 +54,13 @@ class Main:
 
         self.height = 1000
         self.width = math.floor(1.618 * 1000)
-        self.screen = pygame.display.set_mode((self.width, self.height))
+        self.screen = pygame.display.set_mode((self.width, self.height), pygame.DOUBLEBUF)
         self.x_origin, self.y_origin = self.width // 2, self.height
         self.font = pygame.font.Font(None, 36)
 
         #words
         self.banned_area_game_end = 404
-        self.cold_factor = 0.5 #TODO make it progressively fast
+        self.cold_factor = 1.25 #higher~faster TODO make it progressively fast
         self.words_spawnrate = 1000 #time in ms
         self.word_theme = ['adventure', 'belles_lettres', 'editorial', 'fiction', 'government', 'hobbies', 'humor', 'learned', 'lore', 'mystery', 'news', 'religion', 'reviews', 'romance', 'science_fiction']
         self.min_word_len = 3
@@ -78,7 +74,11 @@ class Main:
 
         self.renderer = Render(self.screen, self.font, self.width, self.x_origin, self.y_origin)
         self.word_freqs = nltk.FreqDist(w.lower() for w in brown.words())
-
+        
+        #abilities
+        self.last_time_used_abillity = [0,0,0,0,0]
+        self.abillity_cooldown = [6000, 12000, 7000, 16000, 2000]
+        self.abillity_strength = [8,5,15,4000,8]
 
 
     def update_text_position(self):
@@ -137,24 +137,33 @@ class Main:
 
                         # kill p closest words
                         if event.key == pygame.K_1:
-                            killed_points = kill.kill_p_closest(5) #TODO inheret value based on the shop
+                            if (curr_time - self.last_time_used_abillity[0]) > self.abillity_cooldown[0]:
+                                self.last_time_used_abillity[0] = curr_time
+                                killed_points = kill.kill_p_closest(self.abillity_strength[0]) #TODO inheret value based on the shop
 
-                        # kill q longest words
+                        # kill some longest words
                         elif event.key == pygame.K_2:
-                            killed_points = kill.kill_q_longest(5) #TODO inheret value based on the shop
+                            if (curr_time - self.last_time_used_abillity[1]) > self.abillity_cooldown[1]:
+                                self.last_time_used_abillity[1] = curr_time
+                                killed_points = kill.kill_q_longest(self.abillity_strength[1]) #TODO inherent value based on the shop
 
-                        # angle; max words killed in angle #nlgn hard leetcode problem #1610
+                        # kill as much as possible in certain angle; max words killed in angle #nlgn hard leetcode problem #1610
                         elif event.key == pygame.K_3:
-                            killed_points = kill.kill_in_angle(15) #TODO inheret value based on the shop
+                            if (curr_time - self.last_time_used_abillity[2]) > self.abillity_cooldown[2]:
+                                self.last_time_used_abillity[2] = curr_time
+                                killed_points = kill.kill_in_angle(self.abillity_strength[2]) #TODO inheret value based on the shop
 
-                        # freeeeeeeeeeeeze
+                        # stop production for certain time
                         elif event.key == pygame.K_4:
-                            last_update_time_new_word += 4000 #TODO inheret value based on the shop
-                            last_update_time_render += 4000 #TODO inheret value based on the shop
+                            if (curr_time - self.last_time_used_abillity[3]) > self.abillity_cooldown[3]:
+                                self.last_time_used_abillity[3] = curr_time
+                                last_update_time_new_word += self.abillity_strength[3] #TODO inheret value based on the shop
 
                         # push-back some closest elements
                         elif event.key == pygame.K_5:
-                            pushed_points = kill.kill_p_closest(8)
+                            if (curr_time - self.last_time_used_abillity[4]) > self.abillity_cooldown[4]:
+                                self.last_time_used_abillity[4] = curr_time
+                                pushed_points = kill.kill_p_closest(self.abillity_strength[4])
 
 
                         for p in killed_points:
@@ -195,9 +204,9 @@ class Main:
 
                         self.update_text_position()
 
-
             # rendering and shit
-            if (curr_time - last_update_time_render) > 10: #this is constant
+            abillity_render = [False] * len(self.abillity_cooldown)
+            if (curr_time - last_update_time_render) > 40: #this is a constant and wont change
                 last_update_time_render = curr_time
 
                 _q, new_words_on_screen = point_generator.update_all_points(self.banned_area_game_end, self.x_origin, self.y_origin, self.words_on_screen, self.cold_factor)
@@ -209,18 +218,26 @@ class Main:
                     last_update_time_new_word = curr_time
                     self.words_on_screen[random_word.get_word(self.word_theme, self.min_word_len, self.max_word_len)] = point_generator.random_point_generator(self.banned_area_game_end, self.width, self.height, self.x_origin, self.y_origin)
 
-            self.renderer.render_all(self.banned_area_game_end, self.typed_text, self.text_x, self.text_y, self.words_on_screen, self.lvl, self.xp, self.coins, time_age)
+
+                for i in range(len(self.abillity_cooldown)):
+                    if (curr_time - self.last_time_used_abillity[i]) > self.abillity_cooldown[i]:
+                        abillity_render[i] = True
+
+                self.renderer.render_all(self.banned_area_game_end, self.typed_text, self.text_x, self.text_y, self.words_on_screen, self.lvl, self.xp, self.coins, time_age, abillity_render)
 
 def main():
     session_token = True
-    conn, name, lvl, xp, coins, time = login()
+
+    #autologin testnet
+    #conn, name, lvl, xp, coins, time = login(name='cigan', password='cigan')
+    conn, name, lvl, xp, coins, time = login(name=None, password=None)
     # TODO prompt shop
     # TODO prompt gamemode
-    while session_token:
 
-        # Playing
+    while session_token:
         pygame.init()
         pygame.display.set_caption("Type monkey")
+        pygame.time.Clock().tick(10)
         game = Main(lvl, xp, coins)
         lvl, xp, coins, time = game.playing()
 
@@ -229,6 +246,7 @@ def main():
         print(lvl, xp, coins, time)
         pygame.quit()
 
+        #TODO prompt shop aswell
         choice = input("\nDo you want to play again or log out? (play/log out): ").lower()
         if choice in {"log out", "out", "no", "logout"}:
             session_token = False
