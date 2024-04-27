@@ -1,0 +1,124 @@
+--- game.py	2024-04-27 13:14:05.377306635 +0200
++++ game_with_logs.py	2024-04-27 13:52:20.976177098 +0200
+@@ -10,41 +10,67 @@
+ from killer_functions import Kill
+ import userdb
+ 
+-
+ #making sure it defo downloads the dependencies into the same directory as we play in
+ import pygame
+ import nltk
+ from nltk.corpus import brown
+ 
++import logging
++import threading
++from logging.handlers import RotatingFileHandler
++
++# Set up logging
++logging.basicConfig(
++    level=logging.DEBUG,
++    format='%(asctime)s [Thread-%(threadName)s] %(levelname)s %(name)s - %(filename)s:%(lineno)d - %(message)s',
++    handlers=[
++        RotatingFileHandler('events.log', maxBytes=5000000, backupCount=5),
++        logging.StreamHandler()
++    ]
++)
++
++logger = logging.getLogger(__name__)
++
+ 
+-'''interesting stuff'''
+ def login(name=None, password=None):
++    logger.info('Entering login function')
++
+     conn = userdb.create_connection(db_file='users.db')
+     userdb.create_table(conn)
+ 
+ 
+     if name is None and password is None:
+         name = input("Enter your username: ")
++        logger.info('Name submitted')
+         password = input("Enter your password: ")
++        logger.info('Password submitted')
+     user_exists, password_correct, tmp_lvl, tmp_xp, tmp_coins, tmp_time = userdb.check_user(conn, name, password)
+ 
+ 
+     if user_exists and password_correct:
+         print(f"Welcome back, {name}! Login successful.")
++        logger.info('Exiting login function')
++        logger.error('Login succesful', exc_info=True)
+         return conn, name, tmp_lvl, tmp_xp, tmp_coins, tmp_time
+ 
+     elif user_exists and not password_correct:
+         print("Incorrect password.")
+-        exit()  # Or handle this scenario differently
++        logger.info('wrong password')
++        logger.error('wrong password')
++        exit()
+     else:
+         print(f"User {name} not found.")
+         response = input("Would you like to register? (yes/no): ")
++        logger.info('waiting for user to decide whether or not he/she wants to register')
+         if response.lower() == 'yes':
+-            userdb.add_user(conn, name, password)  # Here, ensure password hashing
++            userdb.add_user(conn, name, password)
+             print("You are registered and logged in.")
+-            return conn, name, 0, 0, 0, None  # Assuming new user starts with no progress
++            logger.info('user managed to register and login consequently')
++            return conn, name, 0, 0, 0, None
+         else:
+             print("You need to register to play.")
++            logger.info('Exiting register function')
++            logger.error('User didnt gave a fuck to play this masterpiece', exc_info=True)
+             exit()
+ 
+ 
+@@ -107,12 +133,14 @@
+                     mouse_x, mouse_y = event.pos
+                     if (button_x <= mouse_x <= button_x + button_width) and (
+                             button_y <= mouse_y <= button_y + button_height):
++                        logger.info('user quit by pressing exit button by mouse')
+                         return self.lvl, self.xp, self.coins, time_age
+ 
+ 
+                 # if something has been pressed on the keyboard
+                 elif event.type == pygame.KEYDOWN:
+                     if event.key == pygame.K_ESCAPE: # different pullout methode - no need to use mouse to stop playing
++                        logger.info('user quit by pressing escape button on keyboard')
+                         return self.lvl, self.xp, self.coins, time_age
+ 
+                     elif (pygame.key.get_mods() & pygame.KMOD_CTRL) and (
+@@ -132,6 +160,7 @@
+ 
+                     # Abilities
+                     elif event.key in {pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5}: #TODO abillity to bind this shit
++                        logger.info('an ability has been used')
+                         kill = Kill(self.x_origin, self.y_origin, self.words_on_screen)
+                         killed_points = []
+                         pushed_points = []
+@@ -190,6 +219,7 @@
+                         self.typed_text += event.unicode
+ 
+                         if self.typed_text in self.words_on_screen:
++                            logger.info('user managed to type out a word')
+                             deleted_word = self.typed_text
+                             del self.words_on_screen[self.typed_text]
+ 
+@@ -245,12 +275,16 @@
+         userdb.update_progress(conn, name, lvl, xp, coins, time)
+         print('\nlvl xp coins time')
+         print(lvl, xp, coins, time)
++        logger.info('quitting played game')
+         pygame.quit()
+ 
+         #TODO prompt shop aswell
+         choice = input("\nDo you want to play again or log out? (play/log out): ").lower()
+         if choice in {"log out", "out", "no", "logout"}:
++            logger.info('user decided to quit the game for a while, needs to login to paly again')
++            logger.error('we are loosing money, he needs to play more till exhaustion!')
+             session_token = False
++        logger.info('user decided to play one more game')
+ 
+ 
+ if __name__ == '__main__': main()
+\ No newline at end of file
