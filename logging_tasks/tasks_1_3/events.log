@@ -1,0 +1,33 @@
+2024-04-27 13:41:29,375 [Thread-MainThread] INFO __main__ - modified_game.py:54 - Entering login function
+2024-04-27 13:41:35,764 [Thread-MainThread] INFO __main__ - modified_game.py:62 - Name submitted
+2024-04-27 13:41:38,322 [Thread-MainThread] INFO __main__ - modified_game.py:64 - Password submitted
+2024-04-27 13:41:42,227 [Thread-MainThread] INFO __main__ - modified_game.py:82 - waiting for user to decide whether or not he/she wants to register
+2024-04-27 13:41:42,227 [Thread-MainThread] INFO __main__ - modified_game.py:90 - Exiting register function
+2024-04-27 13:41:42,227 [Thread-MainThread] ERROR __main__ - modified_game.py:91 - User didnt gave a fuck to play this masterpiece
+NoneType: None
+2024-04-27 13:41:44,053 [Thread-MainThread] INFO __main__ - modified_game.py:54 - Entering login function
+2024-04-27 13:41:52,566 [Thread-MainThread] INFO __main__ - modified_game.py:62 - Name submitted
+2024-04-27 13:41:55,090 [Thread-MainThread] INFO __main__ - modified_game.py:64 - Password submitted
+2024-04-27 13:42:00,161 [Thread-MainThread] INFO __main__ - modified_game.py:70 - Exiting login function
+2024-04-27 13:42:00,161 [Thread-MainThread] ERROR __main__ - modified_game.py:71 - Login succesful
+NoneType: None
+2024-04-27 13:42:04,849 [Thread-MainThread] INFO __main__ - modified_game.py:240 - user managed to type out a word
+2024-04-27 13:42:05,977 [Thread-MainThread] INFO __main__ - modified_game.py:240 - user managed to type out a word
+2024-04-27 13:42:08,787 [Thread-MainThread] INFO __main__ - modified_game.py:240 - user managed to type out a word
+2024-04-27 13:42:10,025 [Thread-MainThread] INFO __main__ - modified_game.py:181 - an ability has been used
+2024-04-27 13:42:11,721 [Thread-MainThread] INFO __main__ - modified_game.py:240 - user managed to type out a word
+2024-04-27 13:42:13,502 [Thread-MainThread] INFO __main__ - modified_game.py:240 - user managed to type out a word
+2024-04-27 13:42:14,510 [Thread-MainThread] INFO __main__ - modified_game.py:240 - user managed to type out a word
+2024-04-27 13:42:15,504 [Thread-MainThread] INFO __main__ - modified_game.py:240 - user managed to type out a word
+2024-04-27 13:42:16,136 [Thread-MainThread] INFO __main__ - modified_game.py:161 - user quit by pressing escape button on keyboard
+2024-04-27 13:42:16,149 [Thread-MainThread] INFO __main__ - modified_game.py:296 - quitting played game
+2024-04-27 13:43:19,120 [Thread-MainThread] INFO __main__ - modified_game.py:54 - Entering login function
+2024-04-27 13:43:21,265 [Thread-MainThread] INFO __main__ - modified_game.py:62 - Name submitted
+2024-04-27 13:43:23,627 [Thread-MainThread] INFO __main__ - modified_game.py:64 - Password submitted
+2024-04-27 13:43:23,862 [Thread-MainThread] INFO __main__ - modified_game.py:70 - Exiting login function
+2024-04-27 13:43:23,862 [Thread-MainThread] ERROR __main__ - modified_game.py:71 - Login succesful
+NoneType: None
+2024-04-27 13:43:29,647 [Thread-MainThread] INFO __main__ - modified_game.py:240 - user managed to type out a word
+2024-04-27 13:43:30,967 [Thread-MainThread] INFO __main__ - modified_game.py:240 - user managed to type out a word
+2024-04-27 13:43:32,351 [Thread-MainThread] INFO __main__ - modified_game.py:154 - user quit by pressing exit button by mouse
+2024-04-27 13:43:32,383 [Thread-MainThread] INFO __main__ - modified_game.py:296 - quitting played game
