@@ -201,7 +201,6 @@ class Main:
                             self.lvl, self.xp = level_definition.determinator(self.lvl, self.xp)
                             self.xp, self.lvl, self.coins = round(self.xp,2), round(self.lvl,2), round(self.coins,2)
                             self.typed_text = ''
-
                         self.update_text_position()
 
             # rendering and shit
@@ -229,8 +228,8 @@ def main():
     session_token = True
 
     #autologin testnet
-    #conn, name, lvl, xp, coins, time = login(name='cigan', password='cigan')
-    conn, name, lvl, xp, coins, time = login(name=None, password=None)
+    conn, name, lvl, xp, coins, time = login(name='cigan', password='cigan')
+    #conn, name, lvl, xp, coins, time = login(name=None, password=None)
     # TODO prompt shop
     # TODO prompt gamemode
 

@@ -30,6 +30,31 @@ class Render:
         text_surface = self.font.render('Leave', True, 'white')
         self.screen.blit(text_surface, (button_x + 15, button_y + 15))
 
+
+    # def render_colorful_typed_text(self, words_on_screen, typed_text, text_x, text_y):
+    #     red = (255, 0, 0)
+    #     green = (0, 255, 0)
+    #
+    #     if typed_text:
+    #         matches_prefix = any(word.startswith(typed_text) for word in words_on_screen)
+    #
+    #         typed_text_color = green if matches_prefix else red
+    #
+    #         typed_text_surface = self.font.render(typed_text, True, typed_text_color)
+    #         self.screen.blit(typed_text_surface, (text_x, text_y + 5))
+    #
+    #         for word, (i, j) in words_on_screen.items():
+    #             for idx, char in enumerate(word):
+    #                 if idx < len(typed_text):
+    #                     char_color = green if char == typed_text[idx] else red
+    #                     char_surface = self.font.render(char, True, char_color)
+    #                     self.screen.blit(char_surface, (i, j))
+    #
+    #                 char_width, _ = self.font.size(char)
+    #                 i += char_width
+    #
+    #     pygame.display.flip()
+
     def render_colorful_typed_text(self, words_on_screen, typed_text, text_x, text_y):
         color = (255, 0, 0)
         prefixes = []
