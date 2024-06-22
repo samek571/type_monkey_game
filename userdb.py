@@ -59,6 +59,12 @@ def check_user(conn, name, password):
             return False, None, None, None, None, None
 
 
+def get_highscore(conn, name):
+    c = conn.cursor()
+    c.execute("SELECT lvl, xp, coins, time FROM users WHERE name = ?", (name,))
+    result = c.fetchone()
+    return list(result)
+
 def update_progress(conn, name, lvl, xp, coins, time):
     c = conn.cursor()
 

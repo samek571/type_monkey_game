@@ -9,7 +9,7 @@ def install(package):
         print(f"Failed to install {package}. Please try to install it manually.")
 
 def main():
-    for package in ['nltk', 'bcrypt', 'pygame']:
+    for package in ['nltk', 'bcrypt', 'pygame', 'pyfiglet']:
         install(package)
 
     import nltk

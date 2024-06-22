@@ -12,12 +12,14 @@ It should be as simple as running `run_me_first.py` once.
    1. `pip install bcrypt`
    2. `pip install nltk`
    3. `pip install pygame`
+   4. `pip install pyfiglet`
 3. You might need to configure the correct interpreter (3.10) right after opening the whole folder as project and that should be it, you are ready to go.
 4. If there are troubles nevertheless, google up or use an A.I. tool that could assist you. Any of the following should get the job done `GPT4`, `Claude`, `Devin`
 (In case of further troubles please contact me via GitHub)
 
 ## Start playing
 Playing the game is pretty simple, just run the `game.py` file and...
+Alternatively open a cmd or konsole, navigate to the folder you just downloaded and enter `chmod +x game.py` (it just grants permission to execute the file), then type `python3 game.py` and you are playing :)
 
 ### Motivation behind the game
 Killing zombies by explicitly writing out their name, you keep your house safe and not getting eaten by these ugly brain eating monsters. Make sure none of them is by the white circle line (your home), otherwise game is over and your brain gets eaten.
