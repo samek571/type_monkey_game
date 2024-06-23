@@ -1,5 +1,4 @@
 import collections
-import os
 import random
 import math
 
@@ -257,7 +256,7 @@ def main():
 
             elif choice in {"shop", "s", "2"}:
                 pretty_printing.clear_console()
-                new_coins, new_owned_stuff = shop.shop_for_user(name, coins, owned_stuff)
+                new_coins, new_owned_stuff = shop.shop_for_user(coins, owned_stuff)
                 userdb.update_progress(conn, name, lvl, xp, new_coins, time, owned_stuff)
                 continue
 
@@ -267,7 +266,6 @@ def main():
                 continue
 
             break
-            #TODO shop
 
 
 

@@ -44,7 +44,6 @@ def check_user(conn, name, password):
     user_info = c.fetchone()
 
     if user_info:
-        print(user_info)
         hashed_password = user_info[1]
         if bcrypt.checkpw(password.encode('utf-8'), hashed_password):
             owned_stuff = json.loads(user_info[6]) if user_info[6] else {}

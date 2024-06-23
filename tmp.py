@@ -4,4 +4,8 @@ def f():
     return True, False, *[None]*4, {}
 
 
-print(f())
+#print(f())
+
+txt = "3asdad"
+txt.capitalize()
+print(txt)
