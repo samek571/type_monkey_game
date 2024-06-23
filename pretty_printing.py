@@ -33,7 +33,7 @@ def pretty_print(word, font='standard'):
     return figlet.renderText(word)
 
 
-def print_game_progress(word, lvl, xp, coins, time):
+def print_game_progress(word, lvl, xp, coins, time, owned_stuff):
     print(pretty_print(word, font='stick_letters'))
 
     print(f"lvl: {lvl}")
@@ -43,3 +43,5 @@ def print_game_progress(word, lvl, xp, coins, time):
         print(f"Best time: {time}")
     else:
         print(f"This run time: {time}")
+
+    print(owned_stuff)

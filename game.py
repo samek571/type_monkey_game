@@ -2,15 +2,15 @@ import collections
 import os
 import random
 import math
-import pyfiglet
 
-#my files that are used just os it doesnt look ugly
+#my files that are used just so it doesnt look ugly
 import level_definition
 import point_generator
 import random_word
 from rendering_the_game import Render
 from killer_functions import Kill
 import userdb
+import shop
 import pretty_printing
 
 
@@ -29,12 +29,12 @@ def login(name=None, password=None):
     if name is None and password is None:
         name = input("Enter your username: ")
         password = input("Enter your password: ")
-    user_exists, password_correct, tmp_lvl, tmp_xp, tmp_coins, tmp_time = userdb.check_user(conn, name, password)
+    user_exists, password_correct, tmp_lvl, tmp_xp, tmp_coins, tmp_time, tmp_owned_stuff = userdb.check_user(conn, name, password)
 
 
     if user_exists and password_correct:
         print(f"Welcome back, {name}! Login successful.")
-        return conn, name, tmp_lvl, tmp_xp, tmp_coins, tmp_time
+        return conn, name, tmp_lvl, tmp_xp, tmp_coins, tmp_time, tmp_owned_stuff
     elif user_exists and not password_correct:
         print("Incorrect password.")
         exit()
@@ -44,7 +44,7 @@ def login(name=None, password=None):
         if response.lower() == 'yes':
             userdb.add_user(conn, name, password)
             print("You are registered and logged in.")
-            return conn, name, 0, 0, 0, None
+            return conn, name, 0, 0, 0, None, {}
         else:
             print("You need to register to play.")
             exit()
@@ -231,7 +231,7 @@ def main():
     pretty_printing.clear_console()
 
     session_token = True
-    conn, name, lvl, xp, coins, time = login(name='cigan', password='cigan') #autologin testnet
+    conn, name, lvl, xp, coins, time, owned_stuff = login(name='cigan', password='cigan') #autologin testnet
     #conn, name, lvl, xp, coins, time = login(name=None, password=None)
     # TODO prompt shop
     # TODO prompt gamemode
@@ -242,11 +242,11 @@ def main():
         pygame.time.Clock().tick(10)
         game = Main(lvl, xp, coins)
         lvl, xp, coins, time = game.playing()
+        pygame.quit()
 
         pretty_printing.clear_console()
-        userdb.update_progress(conn, name, lvl, xp, coins, time)
-        pretty_printing.print_game_progress("Progress",lvl, xp, coins, time)
-        pygame.quit()
+        userdb.update_progress(conn, name, lvl, xp, coins, time, owned_stuff)
+        pretty_printing.print_game_progress("Progress",lvl, xp, coins, time, owned_stuff)
 
         while True:
             print(pretty_printing.pretty_print('\nContinue?'))
@@ -254,8 +254,13 @@ def main():
             if choice in {"log out", "out", "logout", "4", ":q", "q"}:
                 session_token = False
                 break
+
             elif choice in {"shop", "s", "2"}:
-                break
+                pretty_printing.clear_console()
+                new_coins, new_owned_stuff = shop.shop_for_user(name, coins, owned_stuff)
+                userdb.update_progress(conn, name, lvl, xp, new_coins, time, owned_stuff)
+                continue
+
             elif choice in {'highscore','score',"balance", "3"}:
                 pretty_printing.clear_console()
                 pretty_printing.print_game_progress("Balance & achievements", *userdb.get_highscore(conn, name))
@@ -266,4 +271,10 @@ def main():
 
 
 
-if __name__ == '__main__': main()
+if __name__ == '__main__':
+    database = "users.db"
+    conn = userdb.create_connection(database)
+
+    if conn is not None:
+        main()
+        conn.close()
