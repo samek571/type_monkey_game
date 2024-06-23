@@ -21,6 +21,10 @@ def random_point_generator(radius, width, height, x_origin, y_origin):
     while True:
         angle = random.uniform(-math.pi/4, -3/4*math.pi)
         r = random.uniform(2*radius, 3*radius)
+        # lambda_ = 0.1
+        # u = random.uniform(0,1)
+        # r = -math.log(u) / lambda_
+        # r = 2 * radius + (3 * radius - 2 * radius) * (1 - math.exp(-lambda_ * r))  # Scale to the desired range
 
         x = r * math.cos(angle) + x_origin
         y = r * math.sin(angle) + y_origin

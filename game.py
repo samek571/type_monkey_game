@@ -50,24 +50,33 @@ def login(name=None, password=None):
 
 
 class Main:
-    def __init__(self, tmp_lvl, tmp_xp, tmp_coins):
+    def __init__(self, tmp_lvl, tmp_xp, tmp_coins, owned_stuff):
+        self.owned_stuff = owned_stuff
         self.coins = tmp_coins
         self.lvl, self.xp = level_definition.determinator(tmp_lvl, tmp_xp)
 
+        #graphics
         self.height = 1000
         self.width = math.floor(1.618 * 1000)
         self.screen = pygame.display.set_mode((self.width, self.height), pygame.DOUBLEBUF)
         self.x_origin, self.y_origin = self.width // 2, self.height
         self.font = pygame.font.Font(None, 36)
 
-        #words
+        # shop based shits
+        self.word_theme = ['adventure', 'belles_lettres', 'editorial', 'fiction', 'government', 'hobbies', 'humor',
+                           'learned', 'lore', 'mystery', 'news', 'religion', 'reviews', 'romance', 'science_fiction']
+
+        #logistics
         self.banned_area_game_end = 404
         self.cold_factor = 1.25 #higher~faster TODO make it progressively fast
+
+        #words
         self.words_spawnrate = 1000 #time in ms
-        self.word_theme = ['adventure', 'belles_lettres', 'editorial', 'fiction', 'government', 'hobbies', 'humor', 'learned', 'lore', 'mystery', 'news', 'religion', 'reviews', 'romance', 'science_fiction']
+        #self.word_theme = []
         self.min_word_len = 3
         self.max_word_len = 8
 
+        #text
         self.typed_text = ''
         self.words_on_screen = collections.defaultdict(tuple)
         self.text_x, self.text_y = self.width // 2, 10
@@ -75,12 +84,12 @@ class Main:
             (point_generator.random_point_generator(self.banned_area_game_end, self.width, self.height, self.x_origin, self.y_origin))
 
         self.renderer = Render(self.screen, self.font, self.width, self.x_origin, self.y_origin)
+
         self.word_freqs = nltk.FreqDist(w.lower() for w in brown.words())
-        
-        #abilities
         self.last_time_used_abillity = [0,0,0,0,0]
-        self.abillity_cooldown = [6000, 12000, 7000, 16000, 2000]
-        self.abillity_strength = [8,5,15,4000,8]
+        self.abillity_cooldown = [6000, 12000, 7000, 16000, 2000] #TODO gets shop incorporated
+        self.abillity_strength = [8,5,15,4000,8] #TODO gets shop incorporated
+
 
 
     def update_text_position(self):
@@ -177,7 +186,7 @@ class Main:
                             dx = x - self.x_origin
                             dy = y - self.y_origin
                             distance = math.sqrt(dx ** 2 + dy ** 2)
-                            kickback_factor = random.uniform(0.05, 0.15)
+                            kickback_factor = random.uniform(0.05, 0.15) #TODO shop tweaked
                             new_distance = distance * (1 + kickback_factor)
                             new_x = self.x_origin + (dx / distance) * new_distance
                             new_y = self.y_origin + (dy / distance) * new_distance
@@ -230,7 +239,7 @@ def main():
     pretty_printing.clear_console()
 
     session_token = True
-    conn, name, lvl, xp, coins, time, owned_stuff = login(name='cigan', password='cigan') #autologin testnet
+    conn, name, raw_lvl, raw_xp, coins, time, owned_stuff = login(name='cigan', password='cigan') #autologin testnet
     #conn, name, lvl, xp, coins, time = login(name=None, password=None)
     # TODO prompt shop
     # TODO prompt gamemode
@@ -239,7 +248,7 @@ def main():
         pygame.init()
         pygame.display.set_caption("Type monkey")
         pygame.time.Clock().tick(10)
-        game = Main(lvl, xp, coins)
+        game = Main(raw_lvl, raw_xp, coins, owned_stuff)
         lvl, xp, coins, time = game.playing()
         pygame.quit()
 

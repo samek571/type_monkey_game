@@ -44,4 +44,4 @@ def print_game_progress(word, lvl, xp, coins, time, owned_stuff):
     else:
         print(f"This run time: {time}")
 
-    print(owned_stuff)
+    print('owned_stuff:', owned_stuff)
