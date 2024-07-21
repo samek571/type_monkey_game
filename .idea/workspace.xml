@@ -4,12 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="047624fc-f32e-49a6-a716-25ceac7952b8" name="Changes" comment="last stable before shop workload">
+    <list default="true" id="047624fc-f32e-49a6-a716-25ceac7952b8" name="Changes" comment="functional shop, finally">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game.py" beforeDir="false" afterPath="$PROJECT_DIR$/game.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pretty_printing.py" beforeDir="false" afterPath="$PROJECT_DIR$/pretty_printing.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/shop.py" beforeDir="false" afterPath="$PROJECT_DIR$/shop.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users.db" beforeDir="false" afterPath="$PROJECT_DIR$/users.db" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -328,7 +326,15 @@
       <option name="project" value="LOCAL" />
       <updated>1721573993375</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="functional shop, finally">
+      <option name="closed" value="true" />
+      <created>1721580888378</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1721580888378</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -344,7 +350,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="Init" />
     <MESSAGE value="added programming documentation &#10;fetched some little bugs, nothing extra (see the diff)" />
     <MESSAGE value="1. bracker hotfix&#10;2. read.me installation should be more clear" />
     <MESSAGE value="settled up some installation problems" />
@@ -369,7 +374,8 @@
     <MESSAGE value="shop purchases are functional, but their processing isnt developed" />
     <MESSAGE value="some random shits" />
     <MESSAGE value="last stable before shop workload" />
-    <option name="LAST_COMMIT_MESSAGE" value="last stable before shop workload" />
+    <MESSAGE value="functional shop, finally" />
+    <option name="LAST_COMMIT_MESSAGE" value="functional shop, finally" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

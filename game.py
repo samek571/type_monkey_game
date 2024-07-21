@@ -86,13 +86,17 @@ class Main:
         self.word_freqs = nltk.FreqDist(w.lower() for w in brown.words())
         self.last_time_used_abillity = [0,0,0,0,0]
         self.abillity_cooldown = [6000, 12000, 7000, 16000, 2000]
-        self.abillity_strength = [8,5,15,4000,3] #[closest, longest, cross, freeze, pushback]
+        self.abillity_strength = [3,5,15,4000,3] #[closest, longest, cross, freeze, pushback]
 
         #i know its fucking mess but i the whole FUCKING project is dogshit, read the readme and fuckoff
         #print(self.abillity_strength)
         if "improve randomized value of kick back factor" in owned_stuff:
             owned = owned_stuff["improve randomized value of kick back factor"]
             self.pushback = shop.shop_items["improve randomized value of kick back factor"][0][owned-1]
+
+        if "killing n closest enemies (+1)" in owned_stuff:
+            owned = owned_stuff["killing n closest enemies (+1)"]
+            self.abillity_strength[0] = shop.shop_items["killing n closest enemies (+1)"][0][owned-1]
 
         if "mega crossbow angle view (+1deg)" in owned_stuff:
             owned = owned_stuff["mega crossbow angle view (+1deg)"]
@@ -278,8 +282,8 @@ def main():
     pretty_printing.clear_console()
 
     session_token = True
-    conn, name, raw_lvl, raw_xp, coins, time, owned_stuff = login(name='cigan', password='cigan') #autologin testnet
-    #conn, name, lvl, xp, coins, time = login(name=None, password=None)
+    #conn, name, raw_lvl, raw_xp, coins, time, owned_stuff = login(name='cigan', password='cigan') #autologin testnet
+    conn, name, lvl, xp, coins, time = login(name=None, password=None)
     # TODO prompt gamemode
 
     while session_token:

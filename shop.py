@@ -5,15 +5,13 @@ shop_items = {
     "tst": ((1,), (1,2,), 500),
     "ability kills yield xp": ((True), (1,), 1),
     "ability kills yield coins": ((True), (500,), 1),
+    "killing n closest enemies (+1)": ((4,5,6,7),(40, 100, 140, 400),4),
     "freeze duration (+0.4sec)": ((4000, 4400, 4800, 5200, 5600, 6000), (25, 50, 75, 100, 125, 200), 6),
     "mega crossbow angle view (+1deg)": ((16, 17, 18, 19, 20, 21, 22, 23, 24, 25), (40, 70, 100, 135, 180, 370, 400, 500, 550, 610), 10),
     "improve randomized value of kick back factor": ((12, 14, 17, 20), (50, 100, 150, 600), 4),
-    "kick back severity (+1word)" :((4,5,6,7), (60, 120, 250, 500), 4)
+    "kick back severity (+1word)": ((4,5,6,7), (60, 120, 250, 500), 4),
 }
 
-#TODO should not work
-#owned_stuff
-# item:str : owned_amount:int
 def shop_for_user(coins, owned_stuff):
     tmp_internal_mapping = {}
 
