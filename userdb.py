@@ -34,8 +34,8 @@ def create_table(conn):
 def add_user(conn, name, password):
     c = conn.cursor()
     owned_stuff = json.dumps({})
-    c.execute("INSERT INTO users (name, password, owned_stuff) VALUES (?, ?, ?)",
-              (name, password, owned_stuff))
+    c.execute("INSERT INTO users (name, password, lvl, xp, coins, time, owned_stuff) VALUES (?, ?, ?, ?, ?, ?, ?)",
+              (name, password, 0,0,0, None, owned_stuff))
     conn.commit()
 
 def check_user(conn, name, password):
@@ -46,7 +46,7 @@ def check_user(conn, name, password):
     if user_info:
         hashed_password = user_info[1]
         if bcrypt.checkpw(password.encode('utf-8'), hashed_password):
-            owned_stuff = json.loads(user_info[6]) if user_info[6] else {}
+            owned_stuff = json.loads(user_info[6]) if len(user_info)>=7 else {}
             print("Login successful.")
             return True, True, *user_info[2:6], owned_stuff
         else:
@@ -58,10 +58,10 @@ def check_user(conn, name, password):
             hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
             add_user(conn, name, hashed_password)
             print("New user added and logged in.")
-            return True, (name, hashed_password, 0, 0, 0, None), {}
+            return True, name, hashed_password, 0, 0, 0, None, {}
         else:
             print("User not added.")
-            return False, None, None
+            return False, None, None, None, None, None, None
 
 def get_highscore(conn, name):
     c = conn.cursor()
@@ -72,17 +72,17 @@ def get_highscore(conn, name):
 def update_progress(conn, name, lvl, xp, coins, time, owned_stuff):
     c = conn.cursor()
 
-    c.execute("SELECT time FROM users WHERE name = ?", (name,))
-    result = c.fetchone()
-    current_time_in_db = result[0] if result else None
+    try:
+        c.execute("SELECT time FROM users WHERE name = ?", (name,))
+        result = c.fetchone()
+        current_time_in_db = result[0] if result else 0
+        time = max(time, current_time_in_db)
 
-    owned_stuff_json = json.dumps(owned_stuff)
+        owned_stuff_json = json.dumps(owned_stuff)
 
-    if current_time_in_db is None or current_time_in_db < time:
         c.execute("UPDATE users SET lvl = ?, xp = ?, coins = ?, time = ?, owned_stuff = ? WHERE name = ?",
                   (lvl, xp, coins, time, owned_stuff_json, name))
-    else:
-        c.execute("UPDATE users SET lvl = ?, xp = ?, coins = ?, time = ?, owned_stuff = ? WHERE name = ?",
-                  (lvl, xp, coins, current_time_in_db, owned_stuff_json, name))
-
-    conn.commit()
+        conn.commit()
+        print("Database updated successfully.")
+    except Exception as e:
+        print(f"Failed to update database: {e}")

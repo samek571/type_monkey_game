@@ -1,4 +1,3 @@
-import collections
 import random
 import math
 import collections
@@ -26,7 +25,7 @@ def login(name=None, password=None):
     userdb.create_table(conn)
 
 
-    if name is None and password is None:
+    if name is None or password is None:
         name = input("Enter your username: ")
         password = input("Enter your password: ")
     user_exists, password_correct, tmp_lvl, tmp_xp, tmp_coins, tmp_time, tmp_owned_stuff = userdb.check_user(conn, name, password)
@@ -41,7 +40,7 @@ def login(name=None, password=None):
     else:
         print(f"User {name} not found.")
         response = input("Would you like to register? (yes/no): ")
-        if response.lower() == 'yes':
+        if response.lower() in {'yes', ""}:
             userdb.add_user(conn, name, password)
             print("You are registered and logged in.")
             return conn, name, 0, 0, 0, None, {}
@@ -86,13 +85,16 @@ class Main:
         self.word_freqs = nltk.FreqDist(w.lower() for w in brown.words())
         self.last_time_used_abillity = [0,0,0,0,0]
         self.abillity_cooldown = [6000, 12000, 7000, 16000, 2000]
-        self.abillity_strength = [3,5,15,4000,3] #[closest, longest, cross, freeze, pushback]
+        self.abillity_strength = [3,5,15,4000,3] #[closest, longest, cross-angle, freeze, pushback]
 
         #i know its fucking mess but i the whole FUCKING project is dogshit, read the readme and fuckoff
         #print(self.abillity_strength)
+
+        self.pushback = 0.05
         if "improve randomized value of kick back factor" in owned_stuff:
             owned = owned_stuff["improve randomized value of kick back factor"]
             self.pushback = shop.shop_items["improve randomized value of kick back factor"][0][owned-1]
+            print(self.pushback)
 
         if "killing n closest enemies (+1)" in owned_stuff:
             owned = owned_stuff["killing n closest enemies (+1)"]
@@ -143,8 +145,7 @@ class Main:
                 # esc / check if mouse has been pressed - for safe exit
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_x, mouse_y = event.pos
-                    if (button_x <= mouse_x <= button_x + button_width) and (
-                            button_y <= mouse_y <= button_y + button_height):
+                    if (button_x <= mouse_x <= button_x + button_width) and (button_y <= mouse_y <= button_y + button_height):
                         return self.lvl, self.xp, self.coins, time_age
 
 
@@ -278,12 +279,22 @@ class Main:
 
                 self.renderer.render_all(self.banned_area_game_end, self.typed_text, self.text_x, self.text_y, self.words_on_screen, self.lvl, self.xp, self.coins, time_age, abillity_render)
 
+from contextlib import contextmanager
+
+@contextmanager
+def get_db_connection():
+    conn = userdb.create_connection("users.db")
+    try:
+        yield conn
+    finally:
+        conn.close()
+
 def main():
     pretty_printing.clear_console()
 
     session_token = True
     #conn, name, raw_lvl, raw_xp, coins, time, owned_stuff = login(name='cigan', password='cigan') #autologin testnet
-    conn, name, lvl, xp, coins, time = login(name=None, password=None)
+    conn, name, raw_lvl, raw_xp, coins, time, owned_stuff = login(name=None, password=None)
     # TODO prompt gamemode
 
     while session_token:
@@ -293,37 +304,41 @@ def main():
         game = Main(raw_lvl, raw_xp, coins, owned_stuff)
         lvl, xp, coins, time = game.playing()
         pygame.quit()
-
         pretty_printing.clear_console()
-        userdb.update_progress(conn, name, lvl, xp, coins, time, owned_stuff)
-        pretty_printing.print_game_progress("Progress", lvl, xp, coins, time, owned_stuff)
 
-        while True:
-            print(pretty_printing.pretty_print('\nContinue?'))
-            choice = input("(1) Play again\n(2) Shop\n(3) Balance & Achievements\n(4) Log out\n\nAnswer: ").lower().strip()
-            if choice in {"log out", "out", "logout", "4", ":q", "q"}:
-                session_token = False
-                break
+        with get_db_connection() as conn:
+            userdb.update_progress(conn, name, lvl, xp, coins, time, owned_stuff)
+            pretty_printing.print_game_progress("Progress", lvl, xp, coins, time, owned_stuff)
 
-            elif choice in {"shop", "s", "2"}:
-                pretty_printing.clear_console()
-                new_coins, new_owned_stuff = shop.shop_for_user(coins, owned_stuff)
-                userdb.update_progress(conn, name, lvl, xp, new_coins, time, new_owned_stuff)
-                continue
+            while True:
+                print(pretty_printing.pretty_print('\nContinue?'))
+                choice = input("(1) Play again\n(2) Shop\n(3) Balance & Achievements\n(4) Log out\n\nAnswer: ").lower().strip()
+                if choice in {"log out", "out", "logout", "4", ":q", "q"}:
+                    session_token = False
+                    break
 
-            elif choice in {'highscore','score','balance', "3"}:
-                pretty_printing.clear_console()
-                pretty_printing.print_game_progress("Balance & achievements", *userdb.get_highscore(conn, name))
-                continue
+                elif choice in {"shop", "s", "2"}:
+                    pretty_printing.clear_console()
+                    new_coins, new_owned_stuff = shop.shop_for_user(coins, owned_stuff)
+                    userdb.update_progress(conn, name, lvl, xp, new_coins, time, new_owned_stuff)
+                    continue
 
-            break
+                elif choice in {'highscore','score','balance', "3"}:
+                    pretty_printing.clear_console()
+                    pretty_printing.print_game_progress("Balance & achievements", *userdb.get_highscore(conn, name))
+                    continue
+
+                else: #new game
+                    raw_lvl, raw_xp = lvl, xp
+                    break
+
 
 
 
 if __name__ == '__main__':
-    database = "users.db"
-    conn = userdb.create_connection(database)
+    #database = "users.db"
+    #conn = userdb.create_connection(database)
 
-    if conn is not None:
-        main()
-        conn.close()
+    #if conn is not None:
+    main()
+        #conn.close()

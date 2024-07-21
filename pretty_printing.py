@@ -1,5 +1,4 @@
 import pyfiglet
-import re
 import os
 import subprocess
 import platform

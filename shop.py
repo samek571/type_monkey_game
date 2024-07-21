@@ -3,7 +3,7 @@ import pretty_printing
 #key: (actual value, price, len)
 shop_items = {
     "tst": ((1,), (1,2,), 500),
-    "ability kills yield xp": ((True), (1,), 1),
+    "ability kills yield xp": ((True), (200,), 1),
     "ability kills yield coins": ((True), (500,), 1),
     "killing n closest enemies (+1)": ((4,5,6,7),(40, 100, 140, 400),4),
     "freeze duration (+0.4sec)": ((4000, 4400, 4800, 5200, 5600, 6000), (25, 50, 75, 100, 125, 200), 6),
