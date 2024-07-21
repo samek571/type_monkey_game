@@ -1,17 +1,17 @@
 import pretty_printing
 
-#in this case i had no elegant idea how else to represent bools so i came up with this notation
-#item : (item_price:tuple[int], amount_available:int) where len(item_price:tuple) = amount_available
-# TODO tweaker could easily break the game, we need some protection on this file and all other files if possible
+#key: (actual value, price, len)
 shop_items = {
-    "tst": ((1,2,), 500),
-    "ability kills yield xp": ((1000,), 1),
-    "ability kills yield coins": ((500,), 1),
-    "freeze duration (+0.4sec)": ((25, 50, 75, 100, 125), 5),
-    "mega crossbow angle view (+1deg)": ((40, 70, 100, 135, 180, 370, 400, 500, 550, 610), 10),
-    "improve randomized value of kick back factor": ((50, 120, 720, 1000), 4)
+    "tst": ((1,), (1,2,), 500),
+    "ability kills yield xp": ((True), (1,), 1),
+    "ability kills yield coins": ((True), (500,), 1),
+    "freeze duration (+0.4sec)": ((4000, 4400, 4800, 5200, 5600, 6000), (25, 50, 75, 100, 125, 200), 6),
+    "mega crossbow angle view (+1deg)": ((16, 17, 18, 19, 20, 21, 22, 23, 24, 25), (40, 70, 100, 135, 180, 370, 400, 500, 550, 610), 10),
+    "improve randomized value of kick back factor": ((12, 14, 17, 20), (50, 100, 150, 600), 4),
+    "kick back severity (+1word)" :((4,5,6,7), (60, 120, 250, 500), 4)
 }
 
+#TODO should not work
 #owned_stuff
 # item:str : owned_amount:int
 def shop_for_user(coins, owned_stuff):
@@ -21,7 +21,7 @@ def shop_for_user(coins, owned_stuff):
     while True:
         print("\nAvailable items:")
         counter = 1
-        for item, (prices, available_amount) in shop_items.items():
+        for item, (values, prices, available_amount) in shop_items.items():
             owned_amount = owned_stuff.get(item, 0)
             if owned_amount < available_amount:
                 if owned_amount < len(prices):next_price = prices[owned_amount]
@@ -42,7 +42,7 @@ def shop_for_user(coins, owned_stuff):
             break
         elif choice.isdigit() and choice in tmp_internal_mapping:
             item = tmp_internal_mapping[choice]
-            prices, available_amount = shop_items[item]
+            values, prices, available_amount = shop_items[item]
             owned_amount = owned_stuff.get(item, 0)
             if owned_amount < available_amount:
                 if owned_amount < len(prices): item_price = prices[owned_amount]
@@ -64,4 +64,5 @@ def shop_for_user(coins, owned_stuff):
 
     return coins, owned_stuff
 
-#print(shop_for_user(1521, {}))
+
+#print(shop_for_user(12521, {}))

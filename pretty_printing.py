@@ -33,6 +33,27 @@ def pretty_print(word, font='standard'):
     return figlet.renderText(word)
 
 
+def extract_text_outside_parentheses(text):
+    depth = 0
+    result = []
+    skip_space = False
+
+    for char in text:
+        if char == '(':
+            depth += 1
+        elif char == ')':
+            if depth > 0:
+                depth -= 1
+                skip_space = True
+        elif depth == 0:
+            if char != ' ':
+                skip_space = False
+            if not skip_space:
+                result.append(char)
+
+    return ''.join(result).strip()
+
+#TODO separate ownedstuff to own fx
 def print_game_progress(word, lvl, xp, coins, time, owned_stuff):
     print(pretty_print(word, font='stick_letters'))
 
@@ -44,13 +65,18 @@ def print_game_progress(word, lvl, xp, coins, time, owned_stuff):
     else:
         print(f"This run time: {time}")
 
-    print('\nowned_stuff: {')
+    if type(owned_stuff) == str: #cuz of the databaze...
+        owned_stuff = eval(owned_stuff)
 
-    for k,v in owned_stuff.items():
-        txt = re.findall(r'(?<!\()\b\w+\b(?![\)])', k) #handles just one bracket, no nested shits
-        res = ''.join([match for match in txt if match]).strip()
-        print(f"{res}: {v}")
-    print("}")
+    if owned_stuff:
+        print('\nowned_stuff: {')
+
+        for k,v in owned_stuff.items():
+            txt = extract_text_outside_parentheses(k) #handles just one bracket, no nested shits
+            res = ''.join([match for match in txt if match]).strip()
+            print(f"{res}: {v}")
+        print("}")
 
 
-#print_game_progress("a", 1,1,1,1, {"tst (ajsda+34js8shd)": 62})
+#print_game_progress("a", 1,1,1,1, {"tst (ajsda+34js8shd) opel meriva": 62})
+#print_game_progress("a", 1,1,1,1, {"tst ajsda+34js8shd": 62})

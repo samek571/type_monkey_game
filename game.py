@@ -1,6 +1,7 @@
 import collections
 import random
 import math
+import collections
 
 #my files that are used just so it doesnt look ugly
 import level_definition
@@ -51,13 +52,12 @@ def login(name=None, password=None):
 
 class Main:
     def __init__(self, tmp_lvl, tmp_xp, tmp_coins, owned_stuff):
-        self.owned_stuff = owned_stuff
         self.coins = tmp_coins
         self.lvl, self.xp = level_definition.determinator(tmp_lvl, tmp_xp)
 
         #graphics
         self.height = 1000
-        self.width = math.floor(1.618 * 1000)
+        self.width = math.floor(1.618 * self.height)
         self.screen = pygame.display.set_mode((self.width, self.height), pygame.DOUBLEBUF)
         self.x_origin, self.y_origin = self.width // 2, self.height
         self.font = pygame.font.Font(None, 36)
@@ -71,9 +71,8 @@ class Main:
 
         #words
         self.words_spawnrate = 1000 #time in ms
-        #self.word_theme = []
-        self.min_word_len = 3
-        self.max_word_len = 8
+        #self.word_theme = [] #TODO later shop based purchases
+        self.min_word_len, self.max_word_len = 3, 9
 
         #text
         self.typed_text = ''
@@ -86,10 +85,36 @@ class Main:
 
         self.word_freqs = nltk.FreqDist(w.lower() for w in brown.words())
         self.last_time_used_abillity = [0,0,0,0,0]
-        self.abillity_cooldown = [6000, 12000, 7000, 16000, 2000] #TODO gets shop incorporated
-        self.abillity_strength = [8,5,15,4000,8] #TODO gets shop incorporated
+        self.abillity_cooldown = [6000, 12000, 7000, 16000, 2000]
+        self.abillity_strength = [8,5,15,4000,3] #[closest, longest, cross, freeze, pushback]
 
+        #i know its fucking mess but i the whole FUCKING project is dogshit, read the readme and fuckoff
+        #print(self.abillity_strength)
+        if "improve randomized value of kick back factor" in owned_stuff:
+            owned = owned_stuff["improve randomized value of kick back factor"]
+            self.pushback = shop.shop_items["improve randomized value of kick back factor"][0][owned-1]
 
+        if "mega crossbow angle view (+1deg)" in owned_stuff:
+            owned = owned_stuff["mega crossbow angle view (+1deg)"]
+            self.abillity_strength[2] = shop.shop_items["mega crossbow angle view (+1deg)"][0][owned-1]
+
+        if "freeze duration (+0.4sec)" in owned_stuff:
+            owned = owned_stuff["freeze duration (+0.4sec)"]
+            self.abillity_strength[3] = shop.shop_items["freeze duration (+0.4sec)"][0][owned-1]
+
+        if "kick back severity (+1word)" in owned_stuff:
+            owned = owned_stuff["kick back severity (+1word)"]
+            self.abillity_strength[4] = shop.shop_items["kick back severity (+1word)"][0][owned-1]
+
+        self.unlocked_xp = False
+        if "ability kills yield xp" in owned_stuff:
+            self.unlocked_xp = True
+
+        self.unlocked_coins = False
+        if "ability kills yield coins" in owned_stuff:
+            self.unlocked_coins = True
+
+        #print(self.abillity_strength)
 
     def update_text_position(self):
         total_text_width, _ = self.font.size(self.typed_text)
@@ -149,25 +174,25 @@ class Main:
                         if event.key == pygame.K_1:
                             if (curr_time - self.last_time_used_abillity[0]) > self.abillity_cooldown[0]:
                                 self.last_time_used_abillity[0] = curr_time
-                                killed_points = kill.kill_p_closest(self.abillity_strength[0]) #TODO inheret value based on the shop
+                                killed_points = kill.kill_p_closest(self.abillity_strength[0])
 
                         # kill some longest words
                         elif event.key == pygame.K_2:
                             if (curr_time - self.last_time_used_abillity[1]) > self.abillity_cooldown[1]:
                                 self.last_time_used_abillity[1] = curr_time
-                                killed_points = kill.kill_q_longest(self.abillity_strength[1]) #TODO inherent value based on the shop
+                                killed_points = kill.kill_q_longest(self.abillity_strength[1])
 
                         # kill as much as possible in certain angle; max words killed in angle #nlgn hard leetcode problem #1610
                         elif event.key == pygame.K_3:
                             if (curr_time - self.last_time_used_abillity[2]) > self.abillity_cooldown[2]:
                                 self.last_time_used_abillity[2] = curr_time
-                                killed_points = kill.kill_in_angle(self.abillity_strength[2]) #TODO inheret value based on the shop
+                                killed_points = kill.kill_in_angle(self.abillity_strength[2])
 
                         # stop production for certain time
                         elif event.key == pygame.K_4:
                             if (curr_time - self.last_time_used_abillity[3]) > self.abillity_cooldown[3]:
                                 self.last_time_used_abillity[3] = curr_time
-                                last_update_time_new_word += self.abillity_strength[3] #TODO inheret value based on the shop
+                                last_update_time_new_word += self.abillity_strength[3]
 
                         # push-back some closest elements
                         elif event.key == pygame.K_5:
@@ -177,7 +202,23 @@ class Main:
 
 
                         for p in killed_points:
+
+                            if self.unlocked_xp or self.unlocked_coins:
+
+                                rank = self.word_freqs[p[-1]]
+                                word_value = (1+((10-1)*(rank-1)/2500))
+
+                                if self.unlocked_xp:
+                                    self.xp += word_value
+
+                                if self.unlocked_coins:
+                                    self.coins += word_value
+
+                                self.lvl, self.xp = level_definition.determinator(self.lvl, self.xp)
+                                self.xp, self.lvl, self.coins = round(self.xp,2), round(self.lvl,2), round(self.coins,2)
+
                             del self.words_on_screen[p[-1]]
+
 
                         for point in pushed_points:
                             x,y, word = point[1], point[2], point[-1]
@@ -185,7 +226,7 @@ class Main:
                             dx = x - self.x_origin
                             dy = y - self.y_origin
                             distance = math.sqrt(dx ** 2 + dy ** 2)
-                            kickback_factor = random.uniform(0.05, 0.15) #TODO shop tweaked
+                            kickback_factor = random.uniform(0.05, self.pushback*0.01)
                             new_distance = distance * (1 + kickback_factor)
                             new_x = self.x_origin + (dx / distance) * new_distance
                             new_y = self.y_origin + (dy / distance) * new_distance
@@ -203,8 +244,7 @@ class Main:
                             del self.words_on_screen[self.typed_text]
 
                             rank = self.word_freqs[deleted_word]
-                            a,b = 1,10
-                            word_value = (a+((b-a)*(rank-1)/2500))
+                            word_value = (1+((10-1)*(rank-1)/2500))
 
                             self.xp += word_value
                             self.coins += word_value
@@ -215,7 +255,7 @@ class Main:
 
             # rendering and shit
             abillity_render = [False] * len(self.abillity_cooldown)
-            if (curr_time - last_update_time_render) > 40: #this is a constant and wont change
+            if (curr_time - last_update_time_render) > 40: #constant
                 last_update_time_render = curr_time
 
                 _q, new_words_on_screen = point_generator.update_all_points(self.banned_area_game_end, self.x_origin, self.y_origin, self.words_on_screen, self.cold_factor)
@@ -240,7 +280,6 @@ def main():
     session_token = True
     conn, name, raw_lvl, raw_xp, coins, time, owned_stuff = login(name='cigan', password='cigan') #autologin testnet
     #conn, name, lvl, xp, coins, time = login(name=None, password=None)
-    # TODO prompt shop
     # TODO prompt gamemode
 
     while session_token:
