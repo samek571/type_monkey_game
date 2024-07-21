@@ -62,7 +62,6 @@ class Main:
         self.x_origin, self.y_origin = self.width // 2, self.height
         self.font = pygame.font.Font(None, 36)
 
-        # shop based shits
         self.word_theme = ['adventure', 'belles_lettres', 'editorial', 'fiction', 'government', 'hobbies', 'humor',
                            'learned', 'lore', 'mystery', 'news', 'religion', 'reviews', 'romance', 'science_fiction']
 
@@ -254,7 +253,7 @@ def main():
 
         pretty_printing.clear_console()
         userdb.update_progress(conn, name, lvl, xp, coins, time, owned_stuff)
-        pretty_printing.print_game_progress("Progress",lvl, xp, coins, time, owned_stuff)
+        pretty_printing.print_game_progress("Progress", lvl, xp, coins, time, owned_stuff)
 
         while True:
             print(pretty_printing.pretty_print('\nContinue?'))
@@ -266,10 +265,10 @@ def main():
             elif choice in {"shop", "s", "2"}:
                 pretty_printing.clear_console()
                 new_coins, new_owned_stuff = shop.shop_for_user(coins, owned_stuff)
-                userdb.update_progress(conn, name, lvl, xp, new_coins, time, owned_stuff)
+                userdb.update_progress(conn, name, lvl, xp, new_coins, time, new_owned_stuff)
                 continue
 
-            elif choice in {'highscore','score',"balance", "3"}:
+            elif choice in {'highscore','score','balance', "3"}:
                 pretty_printing.clear_console()
                 pretty_printing.print_game_progress("Balance & achievements", *userdb.get_highscore(conn, name))
                 continue

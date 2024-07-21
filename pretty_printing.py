@@ -1,5 +1,5 @@
 import pyfiglet
-
+import re
 import os
 import subprocess
 import platform
@@ -44,4 +44,13 @@ def print_game_progress(word, lvl, xp, coins, time, owned_stuff):
     else:
         print(f"This run time: {time}")
 
-    print('owned_stuff:', owned_stuff)
+    print('\nowned_stuff: {')
+
+    for k,v in owned_stuff.items():
+        txt = re.findall(r'(?<!\()\b\w+\b(?![\)])', k) #handles just one bracket, no nested shits
+        res = ''.join([match for match in txt if match]).strip()
+        print(f"{res}: {v}")
+    print("}")
+
+
+#print_game_progress("a", 1,1,1,1, {"tst (ajsda+34js8shd)": 62})

@@ -4,10 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="047624fc-f32e-49a6-a716-25ceac7952b8" name="Changes" comment="improved.">
+    <list default="true" id="047624fc-f32e-49a6-a716-25ceac7952b8" name="Changes" comment="some random shits">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game.py" beforeDir="false" afterPath="$PROJECT_DIR$/game.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rendering_the_game.py" beforeDir="false" afterPath="$PROJECT_DIR$/rendering_the_game.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pretty_printing.py" beforeDir="false" afterPath="$PROJECT_DIR$/pretty_printing.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/users.db" beforeDir="false" afterPath="$PROJECT_DIR$/users.db" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -47,13 +47,18 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;Python.9.1.executor&quot;: &quot;Run&quot;,
     &quot;Python.game.executor&quot;: &quot;Run&quot;,
+    &quot;Python.get_pretty_print.executor&quot;: &quot;Run&quot;,
     &quot;Python.helper_word_rank.executor&quot;: &quot;Run&quot;,
     &quot;Python.level_definition.executor&quot;: &quot;Run&quot;,
     &quot;Python.login.executor&quot;: &quot;Run&quot;,
     &quot;Python.point_generator.executor&quot;: &quot;Run&quot;,
+    &quot;Python.pretty_printing.executor&quot;: &quot;Run&quot;,
     &quot;Python.rendering_the_game.executor&quot;: &quot;Run&quot;,
     &quot;Python.run_me_first.executor&quot;: &quot;Run&quot;,
+    &quot;Python.shop.executor&quot;: &quot;Run&quot;,
+    &quot;Python.tmp.executor&quot;: &quot;Run&quot;,
     &quot;Python.tst.executor&quot;: &quot;Run&quot;,
     &quot;Python.userdb.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
@@ -69,7 +74,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-0509580d9d50-746f403e7f0c-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.14494.241" />
+        <option value="bundled-python-sdk-975db3bf15a3-31b6be0877a2-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.18034.82" />
       </set>
     </attachedChunks>
   </component>
@@ -274,7 +279,47 @@
       <option name="project" value="LOCAL" />
       <updated>1712182788482</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="Functional printing | commit before starting shop madness">
+      <option name="closed" value="true" />
+      <created>1719060236009</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1719060236009</updated>
+    </task>
+    <task id="LOCAL-00026" summary="functional shop - user can buy (as of now) useless shit that doesnt yet have its power">
+      <option name="closed" value="true" />
+      <created>1719144802805</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1719144802805</updated>
+    </task>
+    <task id="LOCAL-00027" summary="functional shop - user can buy (as of now) useless shit that doesnt yet have its power">
+      <option name="closed" value="true" />
+      <created>1719144848948</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1719144848948</updated>
+    </task>
+    <task id="LOCAL-00028" summary="shop purchases are functional, but their processing isnt developed">
+      <option name="closed" value="true" />
+      <created>1719150980244</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1719150980244</updated>
+    </task>
+    <task id="LOCAL-00029" summary="some random shits">
+      <option name="closed" value="true" />
+      <created>1719159439888</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1719159439888</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -310,6 +355,21 @@
     <MESSAGE value="simple session token" />
     <MESSAGE value="abilities have cooldown | nicer init downloading" />
     <MESSAGE value="improved." />
-    <option name="LAST_COMMIT_MESSAGE" value="improved." />
+    <MESSAGE value="Functional printing | commit before starting shop madness" />
+    <MESSAGE value="functional shop - user can buy (as of now) useless shit that doesnt yet have its power" />
+    <MESSAGE value="shop purchases are functional, but their processing isnt developed" />
+    <MESSAGE value="some random shits" />
+    <option name="LAST_COMMIT_MESSAGE" value="some random shits" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
