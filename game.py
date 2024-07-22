@@ -279,58 +279,57 @@ class Main:
 
                 self.renderer.render_all(self.banned_area_game_end, self.typed_text, self.text_x, self.text_y, self.words_on_screen, self.lvl, self.xp, self.coins, time_age, abillity_render)
 
-from contextlib import contextmanager
-
-@contextmanager
-def get_db_connection():
-    conn = userdb.create_connection("users.db")
-    try:
-        yield conn
-    finally:
-        conn.close()
-
 def main():
     pretty_printing.clear_console()
 
-    session_token = True
+    session_token, training = True, False
     #conn, name, raw_lvl, raw_xp, coins, time, owned_stuff = login(name='cigan', password='cigan') #autologin testnet
+    #conn, name, raw_lvl, raw_xp, coins, time, owned_stuff = login(name='abcd', password='efgh')
     conn, name, raw_lvl, raw_xp, coins, time, owned_stuff = login(name=None, password=None)
     # TODO prompt gamemode
 
     while session_token:
-        pygame.init()
-        pygame.display.set_caption("Type monkey")
-        pygame.time.Clock().tick(10)
-        game = Main(raw_lvl, raw_xp, coins, owned_stuff)
-        lvl, xp, coins, time = game.playing()
-        pygame.quit()
+        lvl, xp, coins, time =  raw_lvl, raw_xp, coins, time
+
+        if not training:
+            pygame.init()
+            pygame.display.set_caption("Type monkey")
+            pygame.time.Clock().tick(10)
+            game = Main(raw_lvl, raw_xp, coins, owned_stuff)
+            lvl, xp, coins, time = game.playing()
+            raw_xp, raw_lvl = xp, lvl
+            pygame.quit()
+        else:
+            pass
+
         pretty_printing.clear_console()
+        userdb.update_progress(conn, name, lvl, xp, coins, time, owned_stuff)
+        pretty_printing.print_game_progress("Progress", lvl, xp, coins, time, owned_stuff)
 
-        with get_db_connection() as conn:
-            userdb.update_progress(conn, name, lvl, xp, coins, time, owned_stuff)
-            pretty_printing.print_game_progress("Progress", lvl, xp, coins, time, owned_stuff)
+        while True:
+            print(pretty_printing.pretty_print('\nContinue?'))
+            choice = input("(1) Play again\n(2) Shop\n(3) Balance & Achievements\n(4) Training mode\n(5) Log out\n\nAnswer: ").lower().strip()
+            if choice in {"log out", "out", "logout", "5", ":q", "q"}:
+                session_token = False
+                break
 
-            while True:
-                print(pretty_printing.pretty_print('\nContinue?'))
-                choice = input("(1) Play again\n(2) Shop\n(3) Balance & Achievements\n(4) Log out\n\nAnswer: ").lower().strip()
-                if choice in {"log out", "out", "logout", "4", ":q", "q"}:
-                    session_token = False
-                    break
+            elif choice in {"shop", "s", "2"}:
+                pretty_printing.clear_console()
+                new_coins, new_owned_stuff = shop.shop_for_user(coins, owned_stuff)
+                userdb.update_progress(conn, name, lvl, xp, new_coins, time, new_owned_stuff)
+                continue
 
-                elif choice in {"shop", "s", "2"}:
-                    pretty_printing.clear_console()
-                    new_coins, new_owned_stuff = shop.shop_for_user(coins, owned_stuff)
-                    userdb.update_progress(conn, name, lvl, xp, new_coins, time, new_owned_stuff)
-                    continue
+            elif choice in {'highscore','score','balance', "3"}:
+                pretty_printing.clear_console()
+                pretty_printing.print_game_progress("Balance & achievements", *userdb.get_highscore(conn, name))
+                continue
 
-                elif choice in {'highscore','score','balance', "3"}:
-                    pretty_printing.clear_console()
-                    pretty_printing.print_game_progress("Balance & achievements", *userdb.get_highscore(conn, name))
-                    continue
+            elif choice in {"train", "4", "Train", "training mode", "Training mode"}:
+                training = True
+                break
 
-                else: #new game
-                    raw_lvl, raw_xp = lvl, xp
-                    break
+            training = False
+            break
 
 
 

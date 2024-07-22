@@ -29,18 +29,16 @@ There are abilities which might help killing the zombies however, each of them h
 - By pressing `2` longest 5 zombies get killed
 - By pressing `3` Mega crossbow shoots and kills as many zombies as possible within 15degree view
 - By pressing `4` zombies stop spawning and moving, granting you 4 seconds to kill the rest of them
-- By pressing `5` a few closest zombies get pushed away
+- By pressing `5` few closest zombies get pushed away
 
 Let's call this version a **First Working Version** as there is a functional login database and the game has purpose, just isnt top-tier
 
 ## Future Updates?
-- shop to utilize coins 
 - more game modes (+languages)
 - progressive speed of the points
-- Konsole texts gets pretty printed
 - settings
 - many more bind-able abilities 
-- Nicer gui
+- nicer gui
 - imporved performance
 - autopilot sub-game
 
